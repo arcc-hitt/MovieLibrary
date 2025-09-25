@@ -1,0 +1,1 @@
+export { TMDBService, tmdbService } from './TMDBService';
