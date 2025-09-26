@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useMovieStore } from '../movieStore';
-import { tmdbService } from '../../services';
+// import { tmdbService } from '../../services';
 import type { TMDBMovieResponse, Movie } from '../../types';
 
 // Mock the TMDB service

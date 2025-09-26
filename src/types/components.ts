@@ -1,4 +1,4 @@
-import type { Movie, WatchlistItem } from './movie';
+import type { Movie } from './movie';
 
 /**
  * MovieCard component props

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Movie, MovieStore, APIError } from '../types';
+import type { MovieStore, APIError } from '../types';
 import { tmdbService } from '../services';
 
 /**
