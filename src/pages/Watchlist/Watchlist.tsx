@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { MovieCard } from '@/components/MovieCard/MovieCard';
 import { useWatchlistStore } from '@/stores/watchlistStore';
 import { Heart, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
-const Watchlist = () => {
+const Watchlist = React.memo(() => {
   const {
     watchlist,
     removeFromWatchlist,
@@ -17,26 +17,31 @@ const Watchlist = () => {
     loadWatchlist();
   }, [loadWatchlist]);
 
-  const handleRemoveFromWatchlist = (movieId: number) => {
+  const handleRemoveFromWatchlist = useCallback((movieId: number) => {
     try {
       removeFromWatchlist(movieId);
     } catch (error) {
       console.error('Error removing from watchlist:', error);
     }
-  };
+  }, [removeFromWatchlist]);
 
-  // Convert watchlist items to movie format for MovieCard
-  const watchlistMovies = watchlist.map(item => ({
-    id: item.id,
-    title: item.title,
-    poster_path: item.poster_path,
-    release_date: item.release_date,
-    overview: '', // Not stored in watchlist
-    vote_average: 0, // Not stored in watchlist
-    genre_ids: [], // Not stored in watchlist
-  }));
+  // Convert watchlist items to movie format for MovieCard - memoized for performance
+  const watchlistMovies = useMemo(() => {
+    return watchlist.map(item => ({
+      id: item.id,
+      title: item.title,
+      poster_path: item.poster_path,
+      release_date: item.release_date,
+      overview: '', // Not stored in watchlist
+      vote_average: 0, // Not stored in watchlist
+      genre_ids: [], // Not stored in watchlist
+    }));
+  }, [watchlist]);
 
-  if (watchlist.length === 0) {
+  const watchlistCount = useMemo(() => watchlist.length, [watchlist.length]);
+  const isEmpty = useMemo(() => watchlistCount === 0, [watchlistCount]);
+
+  if (isEmpty) {
     return (
       <div className="space-y-6">
         {/* Header */}
@@ -73,7 +78,7 @@ const Watchlist = () => {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">My Watchlist</h1>
         <p className="text-muted-foreground">
-          {watchlist.length} {watchlist.length === 1 ? 'movie' : 'movies'} saved to watch later
+          {watchlistCount} {watchlistCount === 1 ? 'movie' : 'movies'} saved to watch later
         </p>
       </div>
 
@@ -104,6 +109,6 @@ const Watchlist = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Watchlist;

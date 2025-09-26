@@ -4,11 +4,11 @@ import { Input, Button } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { SearchBarProps } from '@/types/components'
 
-export function SearchBar({
+export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
     onSearch,
     placeholder = "Search movies...",
     isLoading = false
-}: SearchBarProps) {
+}) {
     const [searchValue, setSearchValue] = React.useState('')
     const [debouncedValue, setDebouncedValue] = React.useState('')
     const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -35,29 +35,29 @@ export function SearchBar({
         onSearch(debouncedValue)
     }, [debouncedValue, onSearch])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(e.target.value)
-    }
+    }, [])
 
-    const handleClear = () => {
+    const handleClear = React.useCallback(() => {
         setSearchValue('')
         setDebouncedValue('')
-    }
+    }, [])
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Escape') {
             handleClear()
         }
-    }
+    }, [handleClear])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = React.useCallback((e: React.FormEvent) => {
         e.preventDefault()
         // Immediately trigger search on form submit
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current)
         }
         setDebouncedValue(searchValue)
-    }
+    }, [searchValue])
 
     return (
         <form onSubmit={handleSubmit} className="relative w-full max-w-md">
@@ -108,4 +108,4 @@ export function SearchBar({
             </button>
         </form>
     )
-}
+})

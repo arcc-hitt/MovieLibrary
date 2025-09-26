@@ -1,41 +1,40 @@
 import React from 'react'
 import { Heart, Plus, X } from 'lucide-react'
 import { Card, CardContent, Button, Badge } from '@/components/ui'
+import { LazyImage } from '@/components/LazyImage'
 import { cn } from '@/lib/utils'
 import type { MovieCardProps } from '@/types/components'
 
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
 
-export function MovieCard({
+export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
   movie,
   isInWatchlist,
   onAddToWatchlist,
   onRemoveFromWatchlist,
   variant = 'default'
-}: MovieCardProps) {
-  const [imageLoaded, setImageLoaded] = React.useState(false)
-  const [imageError, setImageError] = React.useState(false)
+}) {
 
-  const handleWatchlistToggle = () => {
+  const handleWatchlistToggle = React.useCallback(() => {
     if (isInWatchlist) {
       onRemoveFromWatchlist(movie.id)
     } else {
       onAddToWatchlist(movie)
     }
-  }
+  }, [isInWatchlist, onRemoveFromWatchlist, onAddToWatchlist, movie])
 
-  const getImageUrl = (posterPath: string | null) => {
+  const getImageUrl = React.useCallback((posterPath: string | null) => {
     if (!posterPath) return null
     return `${TMDB_IMAGE_BASE_URL}${posterPath}`
-  }
+  }, [])
 
-  const formatReleaseYear = (releaseDate: string) => {
+  const formatReleaseYear = React.useCallback((releaseDate: string) => {
     if (!releaseDate) return ''
     return new Date(releaseDate).getFullYear()
-  }
+  }, [])
 
-  const imageUrl = getImageUrl(movie.poster_path)
-  const releaseYear = formatReleaseYear(movie.release_date)
+  const imageUrl = React.useMemo(() => getImageUrl(movie.poster_path), [getImageUrl, movie.poster_path])
+  const releaseYear = React.useMemo(() => formatReleaseYear(movie.release_date), [formatReleaseYear, movie.release_date])
 
   return (
     <Card className={cn(
@@ -44,22 +43,12 @@ export function MovieCard({
     )}>
       <div className="relative aspect-[2/3] overflow-hidden">
         {/* Movie Poster */}
-        {imageUrl && !imageError ? (
-          <>
-            <img
-              src={imageUrl}
-              alt={`${movie.title} poster`}
-              className={cn(
-                "w-full h-full object-cover transition-opacity duration-300",
-                imageLoaded ? "opacity-100" : "opacity-0"
-              )}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-            />
-            {!imageLoaded && (
-              <div className="absolute inset-0 bg-muted animate-pulse" />
-            )}
-          </>
+        {imageUrl ? (
+          <LazyImage
+            src={imageUrl}
+            alt={`${movie.title} poster`}
+            className="w-full h-full"
+          />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
             <div className="text-center text-muted-foreground p-4">
@@ -125,4 +114,4 @@ export function MovieCard({
       </CardContent>
     </Card>
   )
-}
+})

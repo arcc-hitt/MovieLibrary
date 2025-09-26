@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { MovieCard } from '@/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/components/MovieCard/MovieCardSkeleton';
@@ -12,7 +12,7 @@ import { Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const Home = () => {
+const Home = React.memo(() => {
   const {
     popularMovies,
     searchResults,
@@ -41,41 +41,46 @@ const Home = () => {
     fetchPopularMovies();
   }, [loadWatchlist, fetchPopularMovies]);
 
-  // Determine which movies to display
-  const moviesToDisplay = hasSearched && searchQuery ? searchResults : popularMovies;
-  const showingSearchResults = hasSearched && searchQuery;
+  // Determine which movies to display - memoized for performance
+  const moviesToDisplay = useMemo(() => {
+    return hasSearched && searchQuery ? searchResults : popularMovies;
+  }, [hasSearched, searchQuery, searchResults, popularMovies]);
+  
+  const showingSearchResults = useMemo(() => {
+    return hasSearched && searchQuery;
+  }, [hasSearched, searchQuery]);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     if (query.trim()) {
       setHasSearched(true);
       await searchMovies(query);
     } else {
       handleClearSearch();
     }
-  };
+  }, [searchMovies]);
 
-  const handleClearSearch = () => {
+  const handleClearSearch = useCallback(() => {
     setHasSearched(false);
     clearSearch();
-  };
+  }, [clearSearch]);
 
-  const handleAddToWatchlist = (movie: any) => {
+  const handleAddToWatchlist = useCallback((movie: any) => {
     try {
       addToWatchlist(movie);
     } catch (error) {
       handleWatchlistError(error);
     }
-  };
+  }, [addToWatchlist, handleWatchlistError]);
 
-  const handleRemoveFromWatchlist = (movieId: number) => {
+  const handleRemoveFromWatchlist = useCallback((movieId: number) => {
     try {
       removeFromWatchlist(movieId);
     } catch (error) {
       handleWatchlistError(error);
     }
-  };
+  }, [removeFromWatchlist, handleWatchlistError]);
 
-  const renderMovieGrid = () => {
+  const renderMovieGrid = useMemo(() => {
     if (isLoading) {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -146,7 +151,7 @@ const Home = () => {
         ))}
       </div>
     );
-  };
+  }, [isLoading, error, moviesToDisplay, showingSearchResults, searchQuery, handleSearch, handleClearSearch, fetchPopularMovies, handleAddToWatchlist, handleRemoveFromWatchlist, isInWatchlist]);
 
   return (
     <div className="space-y-6">
@@ -195,7 +200,7 @@ const Home = () => {
       </div>
 
       {/* Movies Grid */}
-      {renderMovieGrid()}
+      {renderMovieGrid}
 
       {/* Results count */}
       {!isLoading && !error && moviesToDisplay.length > 0 && (
@@ -205,6 +210,6 @@ const Home = () => {
       )}
     </div>
   );
-};
+});
 
 export default Home;
