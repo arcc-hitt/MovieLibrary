@@ -20,8 +20,9 @@ export class TMDBService {
     this.client = axios.create({
       baseURL: import.meta.env.VITE_TMDB_BASE_URL || 'https://api.themoviedb.org/3',
       timeout: 10000,
-      params: {
-        api_key: this.apiKey,
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json;charset=utf-8',
       },
     });
 
@@ -39,9 +40,23 @@ export class TMDBService {
 
     // Response interceptor for error handling
     this.client.interceptors.response.use(
-      (response: AxiosResponse) => response,
+      (response: AxiosResponse) => {
+        // Log rate limiting info if available
+        const remaining = response.headers['x-ratelimit-remaining'];
+        const resetTime = response.headers['x-ratelimit-reset'];
+        if (remaining && parseInt(remaining) < 10) {
+          console.warn(`TMDB API rate limit warning: ${remaining} requests remaining, resets at ${resetTime}`);
+        }
+        return response;
+      },
       (error) => {
         if (error.response) {
+          // Handle rate limiting specifically
+          if (error.response.status === 429) {
+            const retryAfter = error.response.headers['retry-after'];
+            console.error(`TMDB API rate limited. Retry after: ${retryAfter} seconds`);
+          }
+          
           // Server responded with error status
           const apiError: APIError = {
             status_code: error.response.status,
@@ -79,9 +94,17 @@ export class TMDBService {
    * @returns Promise<TMDBMovieResponse>
    */
   async getPopularMovies(page: number = 1): Promise<TMDBMovieResponse> {
+    // Validate page parameter
+    if (page < 1 || page > 500) {
+      throw new Error('Page must be between 1 and 500');
+    }
+
     try {
       const response = await this.client.get<TMDBMovieResponse>('/movie/popular', {
-        params: { page },
+        params: { 
+          page,
+          language: 'en-US', // Specify language for consistent results
+        },
       });
       
       // Validate response structure
@@ -107,11 +130,17 @@ export class TMDBService {
       throw new Error('Search query cannot be empty');
     }
 
+    // Validate page parameter
+    if (page < 1 || page > 1000) {
+      throw new Error('Page must be between 1 and 1000');
+    }
+
     try {
       const response = await this.client.get<TMDBMovieResponse>('/search/movie', {
         params: { 
           query: query.trim(),
           page,
+          include_adult: false, // Exclude adult content by default
         },
       });
 

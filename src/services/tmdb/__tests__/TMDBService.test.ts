@@ -65,8 +65,9 @@ describe('TMDBService', () => {
       expect(mockedAxios.create).toHaveBeenCalledWith({
         baseURL: 'https://api.themoviedb.org/3',
         timeout: 10000,
-        params: {
-          api_key: expect.any(String),
+        headers: {
+          'Authorization': expect.stringMatching(/^Bearer .+/),
+          'Content-Type': 'application/json;charset=utf-8',
         },
       });
     });
@@ -84,7 +85,10 @@ describe('TMDBService', () => {
       const result = await tmdbService.getPopularMovies();
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/movie/popular', {
-        params: { page: 1 },
+        params: { 
+          page: 1,
+          language: 'en-US',
+        },
       });
       expect(result).toEqual(mockMovieResponse);
     });
@@ -95,7 +99,10 @@ describe('TMDBService', () => {
       await tmdbService.getPopularMovies(2);
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/movie/popular', {
-        params: { page: 2 },
+        params: { 
+          page: 2,
+          language: 'en-US',
+        },
       });
     });
 
@@ -128,6 +135,16 @@ describe('TMDBService', () => {
 
       await expect(tmdbService.getPopularMovies()).rejects.toEqual(apiError);
     });
+
+    it('should throw error for invalid page numbers in popular movies', async () => {
+      await expect(tmdbService.getPopularMovies(0)).rejects.toThrow(
+        'Page must be between 1 and 500'
+      );
+
+      await expect(tmdbService.getPopularMovies(501)).rejects.toThrow(
+        'Page must be between 1 and 500'
+      );
+    });
   });
 
   describe('searchMovies', () => {
@@ -140,6 +157,7 @@ describe('TMDBService', () => {
         params: {
           query: 'test query',
           page: 1,
+          include_adult: false,
         },
       });
       expect(result).toEqual(mockMovieResponse);
@@ -154,6 +172,7 @@ describe('TMDBService', () => {
         params: {
           query: 'test query',
           page: 3,
+          include_adult: false,
         },
       });
     });
@@ -167,6 +186,7 @@ describe('TMDBService', () => {
         params: {
           query: 'test query',
           page: 1,
+          include_adult: false,
         },
       });
     });
@@ -178,6 +198,16 @@ describe('TMDBService', () => {
 
       await expect(tmdbService.searchMovies('   ')).rejects.toThrow(
         'Search query cannot be empty'
+      );
+    });
+
+    it('should throw error for invalid page numbers in search', async () => {
+      await expect(tmdbService.searchMovies('test', 0)).rejects.toThrow(
+        'Page must be between 1 and 1000'
+      );
+
+      await expect(tmdbService.searchMovies('test', 1001)).rejects.toThrow(
+        'Page must be between 1 and 1000'
       );
     });
 

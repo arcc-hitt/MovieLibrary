@@ -95,12 +95,19 @@ describe('TMDBService Integration Tests', () => {
 
       await tmdbService.getPopularMovies(2);
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/movie/popular', {
-        params: { page: 2 },
+        params: { 
+          page: 2,
+          language: 'en-US',
+        },
       });
 
       await tmdbService.searchMovies('test', 3);
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/search/movie', {
-        params: { query: 'test', page: 3 },
+        params: { 
+          query: 'test', 
+          page: 3,
+          include_adult: false,
+        },
       });
     });
   });
