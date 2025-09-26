@@ -60,52 +60,87 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
     }, [searchValue])
 
     return (
-        <form onSubmit={handleSubmit} className="relative w-full max-w-md">
-            <div className="relative">
-                {/* Search Icon */}
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                    {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <Search className="h-4 w-4" />
+        <div className="w-full max-w-md" role="search" aria-label="Movie search">
+            <form onSubmit={handleSubmit} className="relative">
+                <div className="relative">
+                    {/* Search Icon */}
+                    <div 
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
+                        aria-hidden="true"
+                    >
+                        {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Search className="h-4 w-4" />
+                        )}
+                    </div>
+
+                    {/* Search Input - Enhanced for accessibility */}
+                    <Input
+                        type="search"
+                        value={searchValue}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder={placeholder}
+                        className={cn(
+                            "pl-10 pr-10 w-full",
+                            "focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                            "transition-all duration-200",
+                            // Enhanced mobile styling
+                            "h-10 sm:h-9 text-base sm:text-sm",
+                            // Better touch targets
+                            "touch-manipulation"
+                        )}
+                        disabled={isLoading}
+                        aria-label="Search for movies by title"
+                        aria-describedby={searchValue ? "search-clear-hint" : undefined}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
+                        role="searchbox"
+
+                    />
+
+                    {/* Clear Button - Enhanced accessibility */}
+                    {searchValue && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleClear}
+                            className={cn(
+                                "absolute right-1 top-1/2 transform -translate-y-1/2",
+                                "h-8 w-8 p-0 hover:bg-muted focus:bg-muted",
+                                "focus:ring-2 focus:ring-ring focus:ring-offset-1",
+                                "touch-manipulation min-h-[32px] min-w-[32px]"
+                            )}
+                            aria-label={`Clear search query: ${searchValue}`}
+                            tabIndex={0}
+                        >
+                            <X className="h-4 w-4" aria-hidden="true" />
+                        </Button>
+                    )}
+
+                    {/* Screen reader hint for clear functionality */}
+                    {searchValue && (
+                        <div id="search-clear-hint" className="sr-only">
+                            Press Escape key or click the X button to clear search
+                        </div>
                     )}
                 </div>
 
-                {/* Search Input */}
-                <Input
-                    type="text"
-                    value={searchValue}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder={placeholder}
-                    className={cn(
-                        "pl-10 pr-10",
-                        "focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                        "transition-all duration-200"
-                    )}
-                    disabled={isLoading}
-                    aria-label="Search movies"
-                />
+                {/* Hidden submit button for form submission */}
+                <button type="submit" className="sr-only" tabIndex={-1}>
+                    Search
+                </button>
+            </form>
 
-                {/* Clear Button */}
-                {searchValue && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleClear}
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
-                        aria-label="Clear search"
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
-                )}
+            {/* Search status for screen readers */}
+            <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {isLoading && searchValue && `Searching for ${searchValue}...`}
+                {!isLoading && searchValue && `Search completed for ${searchValue}`}
             </div>
-
-            {/* Hidden submit button for form submission */}
-            <button type="submit" className="sr-only" aria-hidden="true">
-                Search
-            </button>
-        </form>
+        </div>
     )
 })

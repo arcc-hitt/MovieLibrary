@@ -11,6 +11,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 
 const Home = React.memo(() => {
   const {
@@ -83,7 +84,7 @@ const Home = React.memo(() => {
   const renderMovieGrid = useMemo(() => {
     if (isLoading) {
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="responsive-grid" aria-label="Loading movies">
           {Array.from({ length: 10 }).map((_, index) => (
             <MovieCardSkeleton key={index} />
           ))}
@@ -109,7 +110,7 @@ const Home = React.memo(() => {
         return (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Film className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No movies found</h3>
+            <h2 className="text-xl font-semibold mb-2">No movies found</h2>
             <p className="text-muted-foreground mb-4">
               Try searching with different keywords or{' '}
               <button
@@ -126,7 +127,7 @@ const Home = React.memo(() => {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Film className="h-16 w-16 text-muted-foreground mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No movies available</h3>
+          <h2 className="text-xl font-semibold mb-2">No movies available</h2>
           <p className="text-muted-foreground mb-4">
             Unable to load popular movies at the moment.
           </p>
@@ -138,7 +139,7 @@ const Home = React.memo(() => {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="responsive-grid">
         {moviesToDisplay.map((movie) => (
           <MovieCard
             key={movie.id}
@@ -154,10 +155,10 @@ const Home = React.memo(() => {
   }, [isLoading, error, moviesToDisplay, showingSearchResults, searchQuery, handleSearch, handleClearSearch, fetchPopularMovies, handleAddToWatchlist, handleRemoveFromWatchlist, isInWatchlist]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Network Status Alert */}
       {!isOnline && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" role="alert" aria-live="assertive">
           <AlertDescription>
             You're currently offline. Some features may not work properly.
           </AlertDescription>
@@ -165,49 +166,81 @@ const Home = React.memo(() => {
       )}
       
       {isOnline && isSlowConnection && (
-        <Alert>
+        <Alert role="alert" aria-live="polite">
           <AlertDescription>
             Slow connection detected. Loading may take longer than usual.
           </AlertDescription>
         </Alert>
       )}
 
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">
+      {/* Header - Enhanced for accessibility */}
+      <header className="space-y-2 sm:space-y-3">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
           {showingSearchResults ? 'Search Results' : 'Popular Movies'}
         </h1>
         {showingSearchResults && (
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <span>Showing results for "{searchQuery}"</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
+            <span className="text-sm sm:text-base">
+              Showing results for "<span className="font-medium">{searchQuery}</span>"
+            </span>
             <button
               onClick={handleClearSearch}
-              className="text-primary hover:underline text-sm"
+              className={cn(
+                "text-primary hover:underline text-sm sm:text-base",
+                "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm",
+                "self-start sm:self-auto"
+              )}
+              aria-label={`Clear search for ${searchQuery} and return to popular movies`}
             >
               Clear search
             </button>
           </div>
         )}
-      </div>
+      </header>
 
-      {/* Search Bar */}
-      <div className="max-w-md">
+      {/* Search Bar - Enhanced responsive design */}
+      <section aria-label="Movie search" className="w-full sm:max-w-md">
         <SearchBar
           onSearch={handleSearch}
           placeholder={isSlowConnection ? "Search movies (slow connection)..." : "Search for movies..."}
           isLoading={isLoading && hasSearched}
         />
-      </div>
+      </section>
 
-      {/* Movies Grid */}
-      {renderMovieGrid}
+      {/* Movies Grid - Enhanced with proper ARIA labels */}
+      <section 
+        aria-label={showingSearchResults ? `Search results for ${searchQuery}` : 'Popular movies'}
+        className="w-full"
+      >
+        {/* Loading announcement for screen readers */}
+        {isLoading && (
+          <div className="sr-only" aria-live="polite" aria-atomic="true">
+            {showingSearchResults ? `Searching for ${searchQuery}...` : 'Loading popular movies...'}
+          </div>
+        )}
 
-      {/* Results count */}
+        {renderMovieGrid}
+      </section>
+
+      {/* Results count - Enhanced accessibility */}
       {!isLoading && !error && moviesToDisplay.length > 0 && (
-        <div className="text-center text-muted-foreground">
-          Showing {moviesToDisplay.length} {showingSearchResults ? 'search results' : 'popular movies'}
-        </div>
+        <footer 
+          className="text-center text-muted-foreground text-sm sm:text-base"
+          aria-label="Results summary"
+        >
+          <p>
+            Showing <span className="font-medium">{moviesToDisplay.length}</span>{' '}
+            {showingSearchResults ? 'search results' : 'popular movies'}
+          </p>
+        </footer>
       )}
+
+      {/* Status announcements for screen readers */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {error && `Error: ${error}`}
+        {!isLoading && !error && moviesToDisplay.length === 0 && showingSearchResults && 
+          `No movies found for search term: ${searchQuery}`}
+      </div>
     </div>
   );
 });
