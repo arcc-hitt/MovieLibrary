@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { Movie, WatchlistItem, WatchlistStore } from '../types';
-import { StorageService } from '../services';
+import type { Movie, WatchlistItem, WatchlistStore } from '../types';
+import { StorageService } from '@/services/storage';
 
 /**
  * Watchlist store for managing user's saved movies

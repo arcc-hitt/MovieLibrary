@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { TMDBMovieResponse, APIError } from '../../types/api';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import type { TMDBMovieResponse, APIError } from '../../types/api';
 
 /**
  * TMDB API Service for fetching movie data

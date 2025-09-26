@@ -1,4 +1,4 @@
-import { Movie, WatchlistItem } from './movie';
+import type { Movie, WatchlistItem } from './movie';
 
 /**
  * Movie store state and actions interface
