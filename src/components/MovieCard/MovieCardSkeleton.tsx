@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 
 export function MovieCardSkeleton() {
