@@ -2,10 +2,15 @@ import { useEffect, useState } from 'react';
 import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { MovieCard } from '@/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/components/MovieCard/MovieCardSkeleton';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
+
 import { useMovieStore } from '@/stores/movieStore';
 import { useWatchlistStore } from '@/stores/watchlistStore';
-import { AlertCircle, Film } from 'lucide-react';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Home = () => {
   const {
@@ -26,6 +31,8 @@ const Home = () => {
     loadWatchlist,
   } = useWatchlistStore();
 
+  const { isOnline, isSlowConnection } = useNetworkStatus();
+  const { handleError: handleWatchlistError } = useErrorHandler();
   const [hasSearched, setHasSearched] = useState(false);
 
   // Load watchlist and popular movies on mount
@@ -56,7 +63,7 @@ const Home = () => {
     try {
       addToWatchlist(movie);
     } catch (error) {
-      console.error('Error adding to watchlist:', error);
+      handleWatchlistError(error);
     }
   };
 
@@ -64,7 +71,7 @@ const Home = () => {
     try {
       removeFromWatchlist(movieId);
     } catch (error) {
-      console.error('Error removing from watchlist:', error);
+      handleWatchlistError(error);
     }
   };
 
@@ -81,15 +88,13 @@ const Home = () => {
 
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <AlertCircle className="h-16 w-16 text-destructive mb-4" />
-          <h3 className="text-xl font-semibold mb-2">Something went wrong</h3>
-          <p className="text-muted-foreground mb-4 max-w-md">
-            {error}
-          </p>
-          <Button onClick={showingSearchResults ? () => handleSearch(searchQuery) : fetchPopularMovies}>
-            Try Again
-          </Button>
+        <div className="py-12">
+          <ErrorDisplay
+            error={error}
+            onRetry={showingSearchResults ? () => handleSearch(searchQuery) : fetchPopularMovies}
+            variant="card"
+            title={showingSearchResults ? "Search Failed" : "Failed to Load Movies"}
+          />
         </div>
       );
     }
@@ -145,6 +150,23 @@ const Home = () => {
 
   return (
     <div className="space-y-6">
+      {/* Network Status Alert */}
+      {!isOnline && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            You're currently offline. Some features may not work properly.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {isOnline && isSlowConnection && (
+        <Alert>
+          <AlertDescription>
+            Slow connection detected. Loading may take longer than usual.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">
@@ -167,8 +189,8 @@ const Home = () => {
       <div className="max-w-md">
         <SearchBar
           onSearch={handleSearch}
-          placeholder="Search for movies..."
-          isLoading={isLoading}
+          placeholder={isSlowConnection ? "Search movies (slow connection)..." : "Search for movies..."}
+          isLoading={isLoading && hasSearched}
         />
       </div>
 
