@@ -45,7 +45,7 @@ describe('SearchBar', () => {
   it('calls onSearch after debounce delay', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test query' } })
 
     // Should call with empty string initially
@@ -60,7 +60,7 @@ describe('SearchBar', () => {
   it('shows clear button when input has value', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
@@ -79,7 +79,7 @@ describe('SearchBar', () => {
   it('clears input when clear button is clicked', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
@@ -93,7 +93,7 @@ describe('SearchBar', () => {
   it('calls onSearch with empty string when cleared', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
@@ -110,7 +110,7 @@ describe('SearchBar', () => {
   it('clears input when Escape key is pressed', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
 
     fireEvent.keyDown(input, { key: 'Escape' })
@@ -123,7 +123,7 @@ describe('SearchBar', () => {
   it('immediately triggers search on form submit', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test query' } })
 
     // Submit form before debounce timeout
@@ -138,8 +138,8 @@ describe('SearchBar', () => {
   it('has proper accessibility attributes', () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
-    expect(input).toHaveAttribute('aria-label', 'Search movies')
+    const input = screen.getByRole('searchbox')
+    expect(input).toHaveAttribute('aria-label', 'Search for movies by title')
   })
 
   it('calls onSearch with empty string on initial render', () => {
@@ -151,7 +151,7 @@ describe('SearchBar', () => {
   it('updates input value correctly', () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
 
     expect(input).toHaveValue('test')
@@ -160,7 +160,7 @@ describe('SearchBar', () => {
   it('handles keyboard navigation', () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test' } })
     fireEvent.keyDown(input, { key: 'Escape' })
 

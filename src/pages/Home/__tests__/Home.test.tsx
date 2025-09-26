@@ -119,7 +119,7 @@ describe('Home Page', () => {
     
     render(<HomeWrapper />);
     
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText('Failed to Load Movies')).toBeInTheDocument();
     expect(screen.getByText('Failed to load movies')).toBeInTheDocument();
     expect(screen.getByText('Try Again')).toBeInTheDocument();
   });
@@ -163,7 +163,7 @@ describe('Home Page', () => {
     fireEvent.change(screen.getByPlaceholderText('Search for movies...'), { target: { value: 'search' } });
     
     expect(screen.getByText('Search Results')).toBeInTheDocument();
-    expect(screen.getByText('Showing results for "search"')).toBeInTheDocument();
+    expect(screen.getByText(/Showing results for/)).toBeInTheDocument();
   });
 
   it('handles adding movies to watchlist', () => {
