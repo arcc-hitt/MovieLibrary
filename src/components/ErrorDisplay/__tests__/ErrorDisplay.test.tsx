@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ErrorDisplay, NetworkError, RateLimitError } from '../ErrorDisplay';
-import type { APIError } from '@/types/api';
+import { APIError } from '../../../types';
 
 describe('ErrorDisplay', () => {
   it('renders string error message', () => {
