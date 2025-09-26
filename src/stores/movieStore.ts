@@ -26,9 +26,29 @@ export const useMovieStore = create<MovieStore>((set, get) => ({
         error: null 
       });
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : (error as APIError)?.status_message || 'Failed to fetch popular movies';
+      let errorMessage = 'Failed to fetch popular movies';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'status_code' in error) {
+        const apiError = error as APIError;
+        switch (apiError.status_code) {
+          case 0:
+            errorMessage = 'Unable to connect to the internet. Please check your connection and try again.';
+            break;
+          case 429:
+            errorMessage = 'Too many requests. Please wait a moment and try again.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'The movie service is temporarily unavailable. Please try again later.';
+            break;
+          default:
+            errorMessage = apiError.status_message || errorMessage;
+        }
+      }
       
       console.error('Error fetching popular movies:', error);
       set({ 
@@ -62,9 +82,32 @@ export const useMovieStore = create<MovieStore>((set, get) => ({
         error: null 
       });
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : (error as APIError)?.status_message || 'Failed to search movies';
+      let errorMessage = 'Failed to search movies';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'status_code' in error) {
+        const apiError = error as APIError;
+        switch (apiError.status_code) {
+          case 0:
+            errorMessage = 'Unable to connect to the internet. Please check your connection and try again.';
+            break;
+          case 404:
+            errorMessage = 'No movies found matching your search.';
+            break;
+          case 429:
+            errorMessage = 'Too many search requests. Please wait a moment and try again.';
+            break;
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            errorMessage = 'The search service is temporarily unavailable. Please try again later.';
+            break;
+          default:
+            errorMessage = apiError.status_message || errorMessage;
+        }
+      }
       
       console.error('Error searching movies:', error);
       set({ 

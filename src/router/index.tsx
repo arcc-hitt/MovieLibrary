@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import { ErrorBoundary } from '../components/ErrorBoundary/ErrorBoundary';
 import Layout from '../components/Layout/Layout';
 
 // Lazy load page components for code splitting
