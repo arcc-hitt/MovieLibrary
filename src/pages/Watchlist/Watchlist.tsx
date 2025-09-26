@@ -43,69 +43,101 @@ const Watchlist = React.memo(() => {
 
   if (isEmpty) {
     return (
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">My Watchlist</h1>
-          <p className="text-muted-foreground">
+      <div className="space-y-6 sm:space-y-8">
+        {/* Header - Enhanced for accessibility */}
+        <header className="space-y-2 sm:space-y-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">My Watchlist</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Movies you want to watch later will appear here
           </p>
-        </div>
+        </header>
 
-        {/* Empty State */}
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="relative mb-6">
-            <Heart className="h-20 w-20 text-muted-foreground/30" />
-            <Film className="h-8 w-8 text-muted-foreground absolute -top-1 -right-1" />
+        {/* Empty State - Enhanced accessibility */}
+        <section 
+          className="flex flex-col items-center justify-center py-12 sm:py-16 text-center"
+          aria-label="Empty watchlist state"
+        >
+          <div className="relative mb-6" role="img" aria-label="Empty watchlist illustration">
+            <Heart className="h-16 w-16 sm:h-20 sm:w-20 text-muted-foreground/30" aria-hidden="true" />
+            <Film className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground absolute -top-1 -right-1" aria-hidden="true" />
           </div>
-          <h3 className="text-2xl font-semibold mb-2">Your watchlist is empty</h3>
-          <p className="text-muted-foreground mb-6 max-w-md">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-2">Your watchlist is empty</h2>
+          <p className="text-muted-foreground mb-6 max-w-md text-sm sm:text-base px-4">
             Start building your watchlist by browsing popular movies and adding the ones you want to watch.
           </p>
-          <Button asChild>
-            <Link to="/">
+          <Button 
+            asChild
+            className="touch-manipulation min-h-[44px] px-6"
+          >
+            <Link 
+              to="/"
+              aria-label="Go to home page to browse and add movies to your watchlist"
+            >
               Browse Movies
             </Link>
           </Button>
+        </section>
+
+        {/* Screen reader announcement */}
+        <div className="sr-only" aria-live="polite">
+          Your watchlist is currently empty. Navigate to the home page to browse and add movies.
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">My Watchlist</h1>
-        <p className="text-muted-foreground">
-          {watchlistCount} {watchlistCount === 1 ? 'movie' : 'movies'} saved to watch later
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header - Enhanced for accessibility */}
+      <header className="space-y-2 sm:space-y-3">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">My Watchlist</h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
+          <span className="font-medium">{watchlistCount}</span>{' '}
+          {watchlistCount === 1 ? 'movie' : 'movies'} saved to watch later
         </p>
-      </div>
+      </header>
 
-      {/* Movies Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {watchlistMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            isInWatchlist={true}
-            onAddToWatchlist={() => {}} // Not used since isInWatchlist is always true
-            onRemoveFromWatchlist={handleRemoveFromWatchlist}
-            variant="watchlist"
-          />
-        ))}
-      </div>
+      {/* Movies Grid - Enhanced with proper ARIA labels */}
+      <section 
+        aria-label={`Your watchlist containing ${watchlistCount} ${watchlistCount === 1 ? 'movie' : 'movies'}`}
+        className="w-full"
+      >
+        <div className="responsive-grid">
+          {watchlistMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              isInWatchlist={true}
+              onAddToWatchlist={() => {}} // Not used since isInWatchlist is always true
+              onRemoveFromWatchlist={handleRemoveFromWatchlist}
+              variant="watchlist"
+            />
+          ))}
+        </div>
+      </section>
 
-      {/* Footer */}
-      <div className="text-center pt-8">
-        <p className="text-muted-foreground mb-4">
+      {/* Footer - Enhanced accessibility */}
+      <footer className="text-center pt-6 sm:pt-8">
+        <p className="text-muted-foreground mb-4 text-sm sm:text-base">
           Want to add more movies to your watchlist?
         </p>
-        <Button variant="outline" asChild>
-          <Link to="/">
+        <Button 
+          variant="outline" 
+          asChild
+          className="touch-manipulation min-h-[44px] px-6"
+        >
+          <Link 
+            to="/"
+            aria-label="Browse more movies to add to your watchlist"
+          >
             Browse More Movies
           </Link>
         </Button>
+      </footer>
+
+      {/* Screen reader announcement for watchlist count */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        Your watchlist contains {watchlistCount} {watchlistCount === 1 ? 'movie' : 'movies'}.
       </div>
     </div>
   );
