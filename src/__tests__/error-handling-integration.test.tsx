@@ -1,10 +1,9 @@
-import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ErrorDisplay } from '@/components/ErrorDisplay';
-import { useErrorHandler, useAsyncOperation } from '@/hooks/useErrorHandler';
-import type { APIError } from '@/types/api';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ErrorDisplay } from '../components/ErrorDisplay';
+import { useErrorHandler, useAsyncOperation } from '../hooks/useErrorHandler';
+import { APIError } from '../types';
 
 // Mock console.error to avoid noise in tests
 const originalConsoleError = console.error;
