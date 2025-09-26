@@ -26,25 +26,27 @@ const navigationItems: NavigationItem[] = [
     }
 ]
 
-export function Navigation() {
+export const Navigation = React.memo(function Navigation() {
     const location = useLocation()
     const watchlist = useWatchlistStore((state) => state.watchlist)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
-    const toggleMobileMenu = () => {
+    const toggleMobileMenu = React.useCallback(() => {
         setIsMobileMenuOpen(!isMobileMenuOpen)
-    }
+    }, [isMobileMenuOpen])
 
-    const closeMobileMenu = () => {
+    const closeMobileMenu = React.useCallback(() => {
         setIsMobileMenuOpen(false)
-    }
+    }, [])
 
-    const isActivePath = (path: string) => {
+    const isActivePath = React.useCallback((path: string) => {
         if (path === '/') {
             return location.pathname === '/'
         }
         return location.pathname.startsWith(path)
-    }
+    }, [location.pathname])
+
+    const watchlistCount = React.useMemo(() => watchlist.length, [watchlist.length])
 
     return (
         <nav className="bg-background border-b border-border sticky top-0 z-50">
@@ -76,9 +78,9 @@ export function Navigation() {
                                 >
                                     {item.icon}
                                     <span>{item.label}</span>
-                                    {item.path === '/watchlist' && watchlist.length > 0 && (
+                                    {item.path === '/watchlist' && watchlistCount > 0 && (
                                         <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs">
-                                            {watchlist.length}
+                                            {watchlistCount}
                                         </Badge>
                                     )}
                                 </Link>
@@ -128,9 +130,9 @@ export function Navigation() {
                                         {item.icon}
                                         <span>{item.label}</span>
                                     </div>
-                                    {item.path === '/watchlist' && watchlist.length > 0 && (
+                                    {item.path === '/watchlist' && watchlistCount > 0 && (
                                         <Badge variant="secondary" className="h-5 min-w-5 text-xs">
-                                            {watchlist.length}
+                                            {watchlistCount}
                                         </Badge>
                                     )}
                                 </Link>
@@ -141,4 +143,4 @@ export function Navigation() {
             </div>
         </nav>
     )
-}
+})

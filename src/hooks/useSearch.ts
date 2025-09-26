@@ -41,7 +41,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
   
   // Cache for search results
   const cacheRef = useRef<SearchCache>({});
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Cache expiry time (5 minutes)
@@ -89,7 +89,6 @@ export const useSearch = (options: UseSearchOptions = {}) => {
    * Clear expired cache entries
    */
   const clearExpiredCache = useCallback(() => {
-    const now = Date.now();
     Object.keys(cacheRef.current).forEach(query => {
       const cached = cacheRef.current[query];
       if (!isCacheValid(cached.timestamp)) {
