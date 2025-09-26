@@ -1,11 +1,11 @@
-import React from 'react';
-import { 
-  AlertCircle, 
-  WifiOff, 
-  Clock, 
-  RefreshCw, 
+
+import {
+  AlertCircle,
+  WifiOff,
+  Clock,
+  RefreshCw,
   Home,
-  AlertTriangle 
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
