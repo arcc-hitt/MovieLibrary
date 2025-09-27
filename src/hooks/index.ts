@@ -8,3 +8,7 @@ export * from './useNetworkStatus';
 export * from './useMovies';
 export * from './useSearch';
 export * from './useWatchlist';
+
+// Theme Hooks
+export * from './useSystemTheme';
+export * from './useLocalStorage';

@@ -1,8 +1,8 @@
 import React from 'react'
 import { AppRouter } from './router'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
-// Simplified App: removed performance monitoring & bundle logging for a lighter codebase
 function App() {
   const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
     if (import.meta.env.DEV) {
@@ -12,9 +12,11 @@ function App() {
   }
 
   return (
-    <ErrorBoundary onError={handleError}>
-      <AppRouter />
-    </ErrorBoundary>
+    <ThemeProvider defaultTheme="system" enableSystem>
+      <ErrorBoundary onError={handleError}>
+        <AppRouter />
+      </ErrorBoundary>
+    </ThemeProvider>
   )
 }
 

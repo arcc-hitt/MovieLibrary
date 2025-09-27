@@ -17,3 +17,11 @@ export type {
 
 // Store types
 export type { MovieStore, WatchlistStore } from './stores';
+
+// Theme types
+export type { 
+  ThemeMode, 
+  ThemeConfig, 
+  ThemeContextValue, 
+  ThemeProviderProps 
+} from './theme';
