@@ -1,7 +1,6 @@
 import React from 'react'
 import { Heart, Plus, X } from 'lucide-react'
 import { Card, CardContent, Button, Badge } from '@/components/ui'
-import { LazyImage } from '@/components/LazyImage'
 import { cn } from '@/lib/utils'
 import type { MovieCardProps } from '@/types/components'
 
@@ -68,10 +67,12 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
         <div className="relative aspect-[2/3] overflow-hidden rounded-t-lg">
           {/* Movie Poster */}
           {imageUrl ? (
-            <LazyImage
+            <img
               src={imageUrl}
               alt={`Movie poster for ${movie.title}${releaseYear ? ` (${releaseYear})` : ''}`}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div 

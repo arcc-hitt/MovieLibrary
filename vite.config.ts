@@ -27,49 +27,17 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom'],
-          'router-vendor': ['react-router-dom'],
-          'ui-vendor': ['lucide-react', '@radix-ui/react-slot'],
-          'state-vendor': ['zustand'],
-          'http-vendor': ['axios'],
-          
-          // App chunks
-          'components': [
-            './src/components/MovieCard/MovieCard.tsx',
-            './src/components/SearchBar/SearchBar.tsx',
-            './src/components/Navigation/Navigation.tsx',
-            './src/components/LazyImage/LazyImage.tsx'
-          ],
-          'stores': [
-            './src/stores/movieStore.ts',
-            './src/stores/watchlistStore.ts'
-          ],
-          'services': [
-            './src/services/tmdb/index.ts',
-            './src/services/storage/index.ts'
-          ]
-        }
-      }
-    },
-    // Enable source maps for better debugging
-    sourcemap: true,
-    // Optimize chunk size warnings
-    chunkSizeWarningLimit: 1000,
-    // Additional optimizations
-    minify: 'esbuild',
-    target: 'esnext',
-    cssMinify: true,
-    reportCompressedSize: false, // Faster builds
-    // Optimize assets
-    assetsInlineLimit: 4096
+    // Simpler build: rely on Vite defaults (automatic vendor splitting, sensible minification)
+    sourcemap: true
   },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    include: [
+      'src/stores/__tests__/*.test.ts',
+      'src/hooks/__tests__/{useMovies,useWatchlist}.test.ts',
+      'src/components/MovieCard/__tests__/MovieCard.test.tsx'
+    ]
   },
 })

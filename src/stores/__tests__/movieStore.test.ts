@@ -16,6 +16,8 @@ vi.mock('../../services', () => ({
 }));
 
 describe('MovieStore', () => {
+  let errorSpy: ReturnType<typeof vi.spyOn>;
+  let warnSpy: ReturnType<typeof vi.spyOn>;
   beforeEach(() => {
     // Reset store state before each test
     useMovieStore.setState({
@@ -28,9 +30,13 @@ describe('MovieStore', () => {
     
     // Clear all mocks
     vi.clearAllMocks();
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    errorSpy?.mockRestore();
+    warnSpy?.mockRestore();
     vi.restoreAllMocks();
   });
 
