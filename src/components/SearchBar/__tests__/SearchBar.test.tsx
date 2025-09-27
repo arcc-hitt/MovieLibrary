@@ -38,23 +38,18 @@ describe('SearchBar', () => {
   it('disables input when loading', () => {
     render(<SearchBar onSearch={mockOnSearch} isLoading={true} />)
     
-    const input = screen.getByRole('textbox')
+    const input = screen.getByRole('searchbox')
     expect(input).toBeDisabled()
   })
 
-  it('calls onSearch after debounce delay', async () => {
+  it('calls onSearch immediately on input change', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
     const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test query' } })
 
-    // Should call with empty string initially
-    expect(mockOnSearch).toHaveBeenCalledWith('')
-
-    // Wait for debounce
-    await waitFor(() => {
-      expect(mockOnSearch).toHaveBeenCalledWith('test query')
-    }, { timeout: 1000 })
+    // Should call immediately with the new value (no debouncing in component)
+    expect(mockOnSearch).toHaveBeenCalledWith('test query')
   })
 
   it('shows clear button when input has value', async () => {
@@ -64,7 +59,7 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
-      const clearButton = screen.getByLabelText('Clear search')
+      const clearButton = screen.getByLabelText('Clear search query: test')
       expect(clearButton).toBeInTheDocument()
     })
   })
@@ -72,7 +67,7 @@ describe('SearchBar', () => {
   it('does not show clear button when input is empty', () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    const clearButton = screen.queryByLabelText('Clear search')
+    const clearButton = screen.queryByLabelText(/Clear search query/)
     expect(clearButton).not.toBeInTheDocument()
   })
 
@@ -83,7 +78,7 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
-      const clearButton = screen.getByLabelText('Clear search')
+      const clearButton = screen.getByLabelText('Clear search query: test')
       fireEvent.click(clearButton)
     })
 
@@ -97,14 +92,12 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'test' } })
 
     await waitFor(() => {
-      const clearButton = screen.getByLabelText('Clear search')
+      const clearButton = screen.getByLabelText('Clear search query: test')
       fireEvent.click(clearButton)
     })
 
-    // Should eventually call with empty string
-    await waitFor(() => {
-      expect(mockOnSearch).toHaveBeenCalledWith('')
-    })
+    // Should call with empty string immediately when cleared
+    expect(mockOnSearch).toHaveBeenCalledWith('')
   })
 
   it('clears input when Escape key is pressed', async () => {
@@ -120,19 +113,21 @@ describe('SearchBar', () => {
     })
   })
 
-  it('immediately triggers search on form submit', async () => {
+  it('handles form submit without additional search calls', async () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
     const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'test query' } })
 
-    // Submit form before debounce timeout
+    // Clear previous calls
+    mockOnSearch.mockClear()
+
+    // Submit form
     const form = input.closest('form')!
     fireEvent.submit(form)
 
-    await waitFor(() => {
-      expect(mockOnSearch).toHaveBeenCalledWith('test query')
-    })
+    // Should not make additional calls since onSearch is already called on change
+    expect(mockOnSearch).not.toHaveBeenCalled()
   })
 
   it('has proper accessibility attributes', () => {
@@ -142,10 +137,11 @@ describe('SearchBar', () => {
     expect(input).toHaveAttribute('aria-label', 'Search for movies by title')
   })
 
-  it('calls onSearch with empty string on initial render', () => {
+  it('does not call onSearch on initial render', () => {
     render(<SearchBar onSearch={mockOnSearch} />)
     
-    expect(mockOnSearch).toHaveBeenCalledWith('')
+    // Should not call onSearch on initial render since there's no user interaction
+    expect(mockOnSearch).not.toHaveBeenCalled()
   })
 
   it('updates input value correctly', () => {
