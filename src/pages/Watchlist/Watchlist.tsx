@@ -102,7 +102,7 @@ const Watchlist = React.memo(() => {
         aria-label={`Your watchlist containing ${watchlistCount} ${watchlistCount === 1 ? 'movie' : 'movies'}`}
         className="w-full"
       >
-        <div className="responsive-grid">
+        <div className="grid gap-4 sm:gap-6 [grid-template-columns:repeat(auto-fill,minmax(160px,1fr))] sm:[grid-template-columns:repeat(auto-fill,minmax(180px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] lg:[grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
           {watchlistMovies.map((movie) => (
             <MovieCard
               key={movie.id}

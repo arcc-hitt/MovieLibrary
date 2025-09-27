@@ -107,7 +107,7 @@ const Home = React.memo(() => {
     // Handle search loading state
     if (isLoading) {
       return (
-        <div className="responsive-grid" aria-label="Loading movies">
+        <div className="grid gap-4 sm:gap-6 [grid-template-columns:repeat(auto-fill,minmax(160px,1fr))] sm:[grid-template-columns:repeat(auto-fill,minmax(180px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] lg:[grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]" aria-label="Loading movies">
           {Array.from({ length: 8 }).map((_, index) => (
             <MovieCardSkeleton key={`search-skeleton-${index}`} />
           ))}
@@ -166,7 +166,7 @@ const Home = React.memo(() => {
 
     // Render movie grid
     return (
-      <div className="responsive-grid">
+      <div className="grid gap-4 sm:gap-6 [grid-template-columns:repeat(auto-fill,minmax(160px,1fr))] sm:[grid-template-columns:repeat(auto-fill,minmax(180px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] lg:[grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
         {moviesToDisplay.map((movie) => (
           <MovieCard
             key={`${showingSearchResults ? 'search' : 'popular'}-${movie.id}`}

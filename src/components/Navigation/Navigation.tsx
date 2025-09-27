@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Home, Heart } from 'lucide-react'
-import { Button, Badge } from '@/components/ui'
+import { Button, Badge, ThemeToggle } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { useWatchlistStore } from '@/stores/watchlistStore'
 
@@ -72,7 +72,7 @@ export const Navigation = React.memo(function Navigation() {
                     </div>
 
                     {/* Desktop Navigation - Enhanced accessibility */}
-                    <div className="hidden md:block">
+                    <div className="hidden md:flex md:items-center md:space-x-4">
                         <ul className="ml-10 flex items-baseline space-x-4" role="menubar">
                             {navigationItems.map((item) => (
                                 <li key={item.path} role="none">
@@ -105,10 +105,16 @@ export const Navigation = React.memo(function Navigation() {
                                 </li>
                             ))}
                         </ul>
+                        
+                        {/* Theme Toggle */}
+                        <div className="ml-4 pl-4 border-l border-border">
+                            <ThemeToggle />
+                        </div>
                     </div>
 
-                    {/* Mobile menu button - Enhanced accessibility */}
-                    <div className="md:hidden">
+                    {/* Mobile controls - Theme toggle and menu button */}
+                    <div className="md:hidden flex items-center space-x-2">
+                        <ThemeToggle />
                         <Button
                             variant="ghost"
                             size="sm"
