@@ -260,4 +260,50 @@ body {
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
   }
+
+  /* Root layout container */
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* App structural helpers */
+  .app-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .main-content { padding: 1.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .main-content { padding: 2rem; }
+  }
+
+  /* Containment for performance */
+  .movie-grid { contain: layout style paint; }
+  .movie-card { contain: layout style paint; will-change: transform; }
+
+  /* Smooth scrolling with reduced motion fallback */
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  /* Neutralize native search field decorations */
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration { -webkit-appearance: none; appearance: none; display: none; }
+  input[type="search"]::-moz-search-clear { display: none; }
 }
