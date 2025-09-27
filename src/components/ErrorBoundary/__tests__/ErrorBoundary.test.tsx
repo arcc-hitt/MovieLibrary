@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ErrorBoundary, withErrorBoundary } from '../ErrorBoundary';
+import { ErrorBoundary, withErrorBoundary } from '../';
 
 // Mock console.error to avoid noise in tests
 const originalConsoleError = console.error;
@@ -107,10 +107,12 @@ describe('ErrorBoundary', () => {
   });
 
   it('navigates to home when Go Home is clicked', () => {
-    // Mock window.location
-    const originalLocation = window.location;
-    delete (window as any).location;
-    window.location = { ...originalLocation, href: '' };
+    // Mock window.location.href setter behavior
+    const originalHref = window.location.href;
+    Object.defineProperty(window, 'location', {
+      value: { ...window.location, href: '' },
+      writable: true,
+    });
 
     render(
       <ErrorBoundary>
@@ -120,14 +122,14 @@ describe('ErrorBoundary', () => {
 
     fireEvent.click(screen.getByText('Go Home'));
 
-    expect(window.location.href).toBe('/');
-
-    // Restore original location
-    window.location = originalLocation;
+  expect(window.location.href).toBe('/');
+  // Restore original href
+  window.location.href = originalHref;
   });
 
   it('renders custom fallback component when provided', () => {
-    const CustomFallback = ({ error, resetError }: any) => (
+  interface CustomFallbackProps { error: Error; resetError: () => void }
+  const CustomFallback = ({ error, resetError }: CustomFallbackProps) => (
       <div>
         <h1>Custom Error</h1>
         <p>{error.message}</p>

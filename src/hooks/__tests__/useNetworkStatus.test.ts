@@ -2,6 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useNetworkStatus, useNetworkAwareAPI } from '../useNetworkStatus';
 
+interface MutableNavigator extends Navigator {
+    onLine: boolean;
+}
+
+const setNavigatorOnline = (value: boolean) => {
+    (navigator as MutableNavigator).onLine = value;
+};
+
 // Mock navigator.onLine
 Object.defineProperty(navigator, 'onLine', {
     writable: true,
@@ -24,7 +32,7 @@ Object.defineProperty(navigator, 'connection', {
 describe('useNetworkStatus', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (navigator as any).onLine = true;
+    setNavigatorOnline(true);
         mockConnection.effectiveType = '4g';
     });
 
@@ -57,7 +65,7 @@ describe('useNetworkStatus', () => {
 
         // Simulate going offline
         act(() => {
-            (navigator as any).onLine = false;
+            setNavigatorOnline(false);
             window.dispatchEvent(new Event('offline'));
         });
 
@@ -65,7 +73,7 @@ describe('useNetworkStatus', () => {
 
         // Simulate going back online
         act(() => {
-            (navigator as any).onLine = true;
+            setNavigatorOnline(true);
             window.dispatchEvent(new Event('online'));
         });
 
@@ -101,7 +109,7 @@ describe('useNetworkStatus', () => {
 describe('useNetworkAwareAPI', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (navigator as any).onLine = true;
+    setNavigatorOnline(true);
         mockConnection.effectiveType = '4g';
         vi.useFakeTimers();
     });
@@ -125,7 +133,7 @@ describe('useNetworkAwareAPI', () => {
     });
 
     it('throws error when offline', async () => {
-        (navigator as any).onLine = false;
+    setNavigatorOnline(false);
         const { result } = renderHook(() => useNetworkAwareAPI());
         const mockOperation = vi.fn();
 

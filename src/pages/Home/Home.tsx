@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
+import type { Movie } from '@/types/movie';
 import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { MovieCard } from '@/components/MovieCard/MovieCard';
 import { MovieCardSkeleton } from '@/components/MovieCard/MovieCardSkeleton';
@@ -82,7 +83,7 @@ const Home = React.memo(() => {
     return null; // Popular movies error is handled separately
   }, [showingSearchResults, searchError]);
 
-  const handleAddToWatchlist = useCallback((movie: any) => {
+  const handleAddToWatchlist = useCallback((movie: Movie) => {
     try {
       addToWatchlist(movie);
     } catch (error) {

@@ -1,6 +1,5 @@
 import React from 'react'
-import { RouterProvider } from 'react-router-dom'
-import { router } from './router'
+import { AppRouter } from './router'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 // Simplified App: removed performance monitoring & bundle logging for a lighter codebase
@@ -14,7 +13,7 @@ function App() {
 
   return (
     <ErrorBoundary onError={handleError}>
-      <RouterProvider router={router} />
+      <AppRouter />
     </ErrorBoundary>
   )
 }

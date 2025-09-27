@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 
+// Minimal shape for experimental NetworkInformation API
+interface NavigatorConnectionLike {
+  effectiveType?: string;
+  type?: string;
+  addEventListener?: (event: string, handler: () => void) => void;
+  removeEventListener?: (event: string, handler: () => void) => void;
+}
+
 export interface NetworkStatus {
   isOnline: boolean;
   isSlowConnection: boolean;
@@ -27,15 +35,20 @@ export function useNetworkStatus(): NetworkStatus {
 
     // Check connection type and speed if available
     const checkConnectionSpeed = () => {
-      // @ts-ignore - navigator.connection is not in TypeScript types but exists in modern browsers
-      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const potentialNav = navigator as Navigator & {
+        connection?: NavigatorConnectionLike;
+        mozConnection?: NavigatorConnectionLike;
+        webkitConnection?: NavigatorConnectionLike;
+      };
+      const connection: NavigatorConnectionLike | undefined =
+        potentialNav.connection || potentialNav.mozConnection || potentialNav.webkitConnection;
       
       if (connection) {
         setConnectionType(connection.effectiveType || connection.type || null);
         
         // Consider 2g and slow-2g as slow connections
         const slowConnections = ['slow-2g', '2g'];
-        setIsSlowConnection(slowConnections.includes(connection.effectiveType));
+  setIsSlowConnection(slowConnections.includes(connection.effectiveType ?? ''));
         
         console.log('Network: Connection type:', connection.effectiveType || connection.type);
       }
@@ -48,21 +61,22 @@ export function useNetworkStatus(): NetworkStatus {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Listen for connection changes if supported
-    // @ts-ignore
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection) {
-      connection.addEventListener('change', checkConnectionSpeed);
-    }
+  // Listen for connection changes if supported
+  const potentialNav = navigator as Navigator & {
+    connection?: NavigatorConnectionLike;
+    mozConnection?: NavigatorConnectionLike;
+    webkitConnection?: NavigatorConnectionLike;
+  };
+  const connection: NavigatorConnectionLike | undefined =
+    potentialNav.connection || potentialNav.mozConnection || potentialNav.webkitConnection;
+    connection?.addEventListener?.('change', checkConnectionSpeed);
 
     // Cleanup
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       
-      if (connection) {
-        connection.removeEventListener('change', checkConnectionSpeed);
-      }
+      connection?.removeEventListener?.('change', checkConnectionSpeed);
     };
   }, []);
 
@@ -110,7 +124,7 @@ export function useNetworkAwareAPI() {
         
         // Don't retry on certain errors
         if (error && typeof error === 'object' && 'status_code' in error) {
-          const statusCode = (error as any).status_code;
+          const statusCode = (error as { status_code: number }).status_code;
           // Don't retry on 4xx errors (except 429 rate limiting)
           if (statusCode >= 400 && statusCode < 500 && statusCode !== 429) {
             throw error;

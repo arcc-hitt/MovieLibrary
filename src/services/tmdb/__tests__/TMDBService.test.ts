@@ -14,7 +14,14 @@ const mockedAxios = vi.mocked(axios);
 
 describe('TMDBService', () => {
   let tmdbService: TMDBService;
-  let mockAxiosInstance: any;
+  interface MockAxiosInstance {
+    get: ReturnType<typeof vi.fn>;
+    interceptors: {
+      request: { use: ReturnType<typeof vi.fn> };
+      response: { use: ReturnType<typeof vi.fn> };
+    };
+  }
+  let mockAxiosInstance: MockAxiosInstance;
 
   const mockMovie: Movie = {
     id: 1,
@@ -50,7 +57,7 @@ describe('TMDBService', () => {
       },
     };
 
-    (mockedAxios.create as any).mockReturnValue(mockAxiosInstance);
+  (mockedAxios.create as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockAxiosInstance);
 
     // Create new service instance
     tmdbService = new TMDBService();

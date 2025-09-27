@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useErrorHandler, useAsyncOperation, useFormErrorHandler } from '../useErrorHandler';
-import type { APIError } from '@/types/api';
+import type { APIError } from '../../types/api';
 
 describe('useErrorHandler', () => {
   it('initializes with no error', () => {
@@ -140,7 +140,7 @@ describe('useErrorHandler', () => {
     const mockOperation = vi.fn().mockResolvedValue('success');
     const mockOnSuccess = vi.fn();
     
-    let returnValue: any;
+  let returnValue: unknown;
     await act(async () => {
       returnValue = await result.current.retryWithErrorHandling(mockOperation, mockOnSuccess);
     });
@@ -155,7 +155,7 @@ describe('useErrorHandler', () => {
     const { result } = renderHook(() => useErrorHandler());
     const mockOperation = vi.fn().mockRejectedValue(new Error('Operation failed'));
     
-    let returnValue: any;
+  let returnValue: unknown;
     await act(async () => {
       returnValue = await result.current.retryWithErrorHandling(mockOperation);
     });
@@ -180,7 +180,7 @@ describe('useAsyncOperation', () => {
     const mockOperation = vi.fn().mockResolvedValue('success');
     const mockOnSuccess = vi.fn();
     
-    let returnValue: any;
+  let returnValue: unknown;
     await act(async () => {
       returnValue = await result.current.execute(mockOperation, mockOnSuccess);
     });
@@ -197,7 +197,7 @@ describe('useAsyncOperation', () => {
     const mockOperation = vi.fn().mockRejectedValue(new Error('Operation failed'));
     const mockOnError = vi.fn();
     
-    let returnValue: any;
+  let returnValue: unknown;
     await act(async () => {
       returnValue = await result.current.execute(mockOperation, undefined, mockOnError);
     });

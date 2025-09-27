@@ -51,6 +51,8 @@ describe('useWatchlist', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
   let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
 
+  const mockedUseWatchlistStore = vi.mocked(useWatchlistStore);
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Silence expected error/warn noise produced intentionally by error-path tests
@@ -58,7 +60,7 @@ describe('useWatchlist', () => {
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     
     // Setup default mock implementation
-    (useWatchlistStore as any).mockReturnValue({
+    mockedUseWatchlistStore.mockReturnValue({
       watchlist: [],
       addToWatchlist: mockAddToWatchlist,
       removeFromWatchlist: mockRemoveFromWatchlist,
@@ -95,7 +97,7 @@ describe('useWatchlist', () => {
     });
 
     it('should return correct state with watchlist items', () => {
-      (useWatchlistStore as any).mockReturnValue({
+      mockedUseWatchlistStore.mockReturnValue({
         watchlist: mockWatchlistItems,
         addToWatchlist: mockAddToWatchlist,
         removeFromWatchlist: mockRemoveFromWatchlist,
@@ -361,7 +363,7 @@ describe('useWatchlist', () => {
 
   describe('utility functions', () => {
     beforeEach(() => {
-      (useWatchlistStore as any).mockReturnValue({
+      mockedUseWatchlistStore.mockReturnValue({
         watchlist: mockWatchlistItems,
         addToWatchlist: mockAddToWatchlist,
         removeFromWatchlist: mockRemoveFromWatchlist,

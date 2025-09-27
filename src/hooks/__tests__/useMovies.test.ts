@@ -34,11 +34,13 @@ describe('useMovies', () => {
   const mockClearSearch = vi.fn();
   const mockSetError = vi.fn();
 
+  const mockedUseMovieStore = vi.mocked(useMovieStore);
+
   beforeEach(() => {
     vi.clearAllMocks();
     
     // Setup default mock implementation
-    (useMovieStore as any).mockReturnValue({
+    mockedUseMovieStore.mockReturnValue({
       popularMovies: [],
       searchResults: [],
       isLoading: false,
@@ -79,7 +81,7 @@ describe('useMovies', () => {
     });
 
     it('should not fetch popular movies if they already exist', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [],
         isLoading: false,
@@ -97,7 +99,7 @@ describe('useMovies', () => {
     });
 
     it('should not fetch popular movies if already loading', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: true,
@@ -115,7 +117,7 @@ describe('useMovies', () => {
     });
 
     it('should not fetch popular movies if there is an error', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -135,7 +137,7 @@ describe('useMovies', () => {
 
   describe('movie data handling', () => {
     it('should return popular movies when not searching', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [],
         isLoading: false,
@@ -158,7 +160,7 @@ describe('useMovies', () => {
     it('should return search results when searching', () => {
       const searchResults = [mockMovies[0]];
       
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults,
         isLoading: false,
@@ -179,7 +181,7 @@ describe('useMovies', () => {
     });
 
     it('should show empty state when no movies and not loading', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -198,7 +200,7 @@ describe('useMovies', () => {
     });
 
     it('should not show empty state when loading', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: true,
@@ -216,7 +218,7 @@ describe('useMovies', () => {
     });
 
     it('should not show empty state when there is an error', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -236,7 +238,7 @@ describe('useMovies', () => {
 
   describe('retry functionality', () => {
     it('should retry fetching popular movies when not searching', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -259,7 +261,7 @@ describe('useMovies', () => {
     });
 
     it('should retry search when searching', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [],
         isLoading: false,
@@ -282,7 +284,7 @@ describe('useMovies', () => {
     });
 
     it('should retry popular movies specifically', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -305,7 +307,7 @@ describe('useMovies', () => {
     });
 
     it('should retry search specifically', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [],
         isLoading: false,
@@ -328,7 +330,7 @@ describe('useMovies', () => {
     });
 
     it('should not retry search if no search query', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [],
         isLoading: false,
@@ -352,7 +354,7 @@ describe('useMovies', () => {
 
   describe('error handling', () => {
     it('should clear error', async () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: [],
         searchResults: [],
         isLoading: false,
@@ -384,7 +386,7 @@ describe('useMovies', () => {
     });
 
     it('should expose all store state', () => {
-      (useMovieStore as any).mockReturnValue({
+      mockedUseMovieStore.mockReturnValue({
         popularMovies: mockMovies,
         searchResults: [mockMovies[0]],
         isLoading: true,
