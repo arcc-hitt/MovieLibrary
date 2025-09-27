@@ -42,7 +42,7 @@ const Home = React.memo(() => {
     isEmpty,
     clear: clearSearch,
   } = useSearch({
-    debounceMs: 200, // Faster debounce for better UX
+    debounceMs: 0, // Fully immediate search (no debounce)
     minQueryLength: 1, // Search from first character
     enableCache: true,
   });
@@ -244,6 +244,7 @@ const Home = React.memo(() => {
           onSearch={setQuery}
           placeholder={isSlowConnection ? "Search movies (slow connection)..." : "Search for movies..."}
           isLoading={isSearching}
+          autoFocus
         />
       </section>
 

@@ -18,6 +18,8 @@ export interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   isLoading?: boolean;
+  /** Auto focus the input on mount */
+  autoFocus?: boolean;
 }
 
 /**

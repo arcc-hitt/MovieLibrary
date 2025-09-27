@@ -7,9 +7,11 @@ import type { SearchBarProps } from '@/types/components'
 export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
     onSearch,
     placeholder = "Search movies...",
-    isLoading = false
+    isLoading = false,
+    autoFocus = false
 }) {
     const [searchValue, setSearchValue] = React.useState('')
+    const inputRef = React.useRef<HTMLInputElement | null>(null)
 
     const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -21,6 +23,10 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
     const handleClear = React.useCallback(() => {
         setSearchValue('')
         onSearch('')
+        // Restore focus after clearing
+        requestAnimationFrame(() => {
+            inputRef.current?.focus()
+        })
     }, [onSearch])
 
     const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -53,6 +59,7 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
                     {/* Search Input - Enhanced for accessibility */}
                     <Input
                         type="search"
+                        ref={inputRef}
                         value={searchValue}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
@@ -66,7 +73,8 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
                             // Better touch targets
                             "touch-manipulation"
                         )}
-                        disabled={isLoading}
+                        // Do not disable while loading to preserve focus and typing continuity
+                        aria-busy={isLoading}
                         aria-label="Search for movies by title"
                         aria-describedby={searchValue ? "search-clear-hint" : undefined}
                         autoComplete="off"
@@ -74,6 +82,7 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
                         autoCapitalize="off"
                         spellCheck="false"
                         role="searchbox"
+                        autoFocus={autoFocus}
 
                     />
 
