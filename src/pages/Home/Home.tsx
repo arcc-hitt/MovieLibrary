@@ -42,7 +42,7 @@ const Home = React.memo(() => {
     isEmpty,
     clear: clearSearch,
   } = useSearch({
-    debounceMs: 50, // Near-immediate search for real-time feedback
+    debounceMs: 0, // Fully immediate search (no debounce)
     minQueryLength: 1, // Search from first character
     enableCache: true,
   });
