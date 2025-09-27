@@ -14,14 +14,22 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
   onRemoveFromWatchlist,
   variant = 'default'
 }) {
+  // Optimistic local state so the button toggles instantly (requested UX)
+  const [optimisticInWatchlist, setOptimisticInWatchlist] = React.useState(isInWatchlist)
+
+  // Keep local state in sync if external store updates (e.g. on hydration or external change)
+  React.useEffect(() => {
+    setOptimisticInWatchlist(isInWatchlist)
+  }, [isInWatchlist])
 
   const handleWatchlistToggle = React.useCallback(() => {
-    if (isInWatchlist) {
+    setOptimisticInWatchlist(prev => !prev)
+    if (optimisticInWatchlist) {
       onRemoveFromWatchlist(movie.id)
     } else {
       onAddToWatchlist(movie)
     }
-  }, [isInWatchlist, onRemoveFromWatchlist, onAddToWatchlist, movie])
+  }, [optimisticInWatchlist, onRemoveFromWatchlist, onAddToWatchlist, movie])
 
   const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -49,9 +57,7 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
         "group relative overflow-hidden transition-all duration-300",
         "hover:shadow-lg hover:scale-105 focus-within:shadow-lg focus-within:scale-105",
         "bg-card border-border rounded-lg",
-        // Enhanced responsive design
         "w-full max-w-sm mx-auto sm:max-w-none",
-        // Better touch targets on mobile
         "touch-manipulation"
       )}
       role="article"
@@ -82,38 +88,57 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
             </div>
           )}
 
-          {/* Watchlist Button Overlay - Enhanced for accessibility */}
+          {/* Watchlist Button Overlay */}
           <div className={cn(
             "absolute top-2 right-2 transition-opacity duration-300",
-            // Always visible on mobile for better accessibility
             "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
           )}>
             <Button
               size="sm"
-              variant={isInWatchlist ? "destructive" : "secondary"}
+              variant={optimisticInWatchlist ? "destructive" : "secondary"}
+              data-state={optimisticInWatchlist ? 'on' : 'off'}
               onClick={handleWatchlistToggle}
               onKeyDown={handleKeyDown}
               className={cn(
-                "h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-full shadow-lg",
+                "relative h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-full shadow-lg",
                 "focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                "transition-colors motion-reduce:transition-none",
                 "touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px]",
-                isInWatchlist 
-                  ? "bg-destructive hover:bg-destructive/90 focus:bg-destructive/90" 
+                optimisticInWatchlist
+                  ? "bg-destructive hover:bg-destructive/90 focus:bg-destructive/90"
                   : "bg-background/90 hover:bg-background focus:bg-background"
               )}
-              aria-label={`${isInWatchlist ? 'Remove' : 'Add'} ${movie.title} ${isInWatchlist ? 'from' : 'to'} watchlist`}
-              aria-pressed={isInWatchlist}
+              aria-label={`${optimisticInWatchlist ? 'Remove' : 'Add'} ${movie.title} ${optimisticInWatchlist ? 'from' : 'to'} watchlist`}
+              aria-pressed={optimisticInWatchlist}
               tabIndex={0}
             >
-              {isInWatchlist ? (
-                <X className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Plus className="h-4 w-4" aria-hidden="true" />
-              )}
+              {/* Animated icon swap */}
+              <span className="pointer-events-none relative flex items-center justify-center h-4 w-4">
+                <Plus
+                  className={cn(
+                    "absolute inset-0 h-4 w-4 transition-all duration-200 ease-out",
+                    "motion-reduce:transition-none",
+                    optimisticInWatchlist
+                      ? "opacity-0 rotate-90"
+                      : "opacity-100 rotate-0"
+                  )}
+                  aria-hidden="true"
+                />
+                <X
+                  className={cn(
+                    "absolute inset-0 h-4 w-4 transition-all duration-200 ease-out",
+                    "motion-reduce:transition-none",
+                    optimisticInWatchlist
+                      ? "opacity-100 scale-100 rotate-0"
+                      : "opacity-0 scale-50 -rotate-90"
+                  )}
+                  aria-hidden="true"
+                />
+              </span>
             </Button>
           </div>
 
-          {/* Rating Badge - Enhanced accessibility */}
+          {/* Rating Badge */}
           {movie.vote_average > 0 && (
             <div className="absolute top-2 left-2">
               <Badge 
@@ -130,9 +155,15 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
 
         <CardContent className="p-3 sm:p-4 flex-1">
           <div className="space-y-1 sm:space-y-2">
-            <h3 
+            <h3
               id={`movie-title-${movie.id}`}
-              className="font-semibold text-sm sm:text-base leading-tight line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]"
+              className={cn(
+                "font-semibold text-sm sm:text-base leading-tight",
+                "line-clamp-2",
+              )}
+              title={movie.title}
+              aria-label={movie.title}
+              data-full-title={movie.title.length > 60 ? movie.title : undefined}
             >
               {movie.title}
             </h3>
