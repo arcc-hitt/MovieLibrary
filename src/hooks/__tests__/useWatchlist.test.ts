@@ -48,8 +48,14 @@ describe('useWatchlist', () => {
   const mockLoadWatchlist = vi.fn();
   const mockClearWatchlist = vi.fn();
 
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    // Silence expected error/warn noise produced intentionally by error-path tests
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     
     // Setup default mock implementation
     (useWatchlistStore as any).mockReturnValue({
@@ -65,6 +71,8 @@ describe('useWatchlist', () => {
   });
 
   afterEach(() => {
+    consoleErrorSpy?.mockRestore();
+    consoleWarnSpy?.mockRestore();
     vi.restoreAllMocks();
   });
 
