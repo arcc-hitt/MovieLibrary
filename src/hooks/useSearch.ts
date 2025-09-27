@@ -153,42 +153,49 @@ export const useSearch = (options: UseSearchOptions = {}) => {
    * Debounced search effect
    */
   useEffect(() => {
-    // Clear existing timeout
+    const trimmedInput = inputValue.trim();
+
+    // Always clear any previous timeout
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    const trimmedInput = inputValue.trim();
-
-    // If input is empty, clear search immediately
+    // When input empty -> reset immediately
     if (!trimmedInput) {
-      setIsDebouncing(false);
+      if (isDebouncing) setIsDebouncing(false);
       clearSearch();
       return;
     }
 
-    // If input is too short, don't search
+    // If query too short just update flags
     if (trimmedInput.length < minQueryLength) {
-      setIsDebouncing(false);
+      if (isDebouncing) setIsDebouncing(false);
       return;
     }
 
-    // Set debouncing state
-    setIsDebouncing(true);
+    // Immediate mode (no debouncing desired)
+    if (debounceMs <= 0) {
+      if (isDebouncing) setIsDebouncing(false);
+      // Avoid duplicate calls for same query already in store
+      if (trimmedInput !== storeSearchQuery) {
+        performSearch(trimmedInput);
+      }
+      return; // Exit effect – no timeout
+    }
 
-    // Set up debounced search
+    // Debounced mode
+    setIsDebouncing(true);
     debounceTimeoutRef.current = setTimeout(() => {
       setIsDebouncing(false);
       performSearch(trimmedInput);
     }, debounceMs);
 
-    // Cleanup function
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, [inputValue, debounceMs, minQueryLength, performSearch, clearSearch]);
+  }, [inputValue, debounceMs, minQueryLength, performSearch, clearSearch, isDebouncing, storeSearchQuery]);
 
   /**
    * Clean up on unmount
