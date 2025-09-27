@@ -219,4 +219,46 @@ describe('MovieCard', () => {
 
     expect(screen.queryByText('2023')).not.toBeInTheDocument()
   })
+
+  it('applies proper styling and accessibility for very long titles', () => {
+    const longTitle = 'This is an extraordinarily, almost absurdly, impossibly long movie title designed to test wrapping, clamping and accessibility fallbacks beyond normal expectations'
+    const longTitleMovie = { ...mockMovie, title: longTitle }
+
+    render(
+      <MovieCard
+        movie={longTitleMovie}
+        isInWatchlist={false}
+        onAddToWatchlist={mockOnAddToWatchlist}
+        onRemoveFromWatchlist={mockOnRemoveFromWatchlist}
+      />
+    )
+
+    // React strict mode/dev may render twice; use getAll and assert first instance
+    const headings = screen.getAllByRole('heading', { name: longTitle })
+    expect(headings.length).toBeGreaterThan(0)
+    const heading = headings[0]
+    expect(heading).toHaveAttribute('title', longTitle)
+    expect(heading).toHaveAttribute('data-full-title', longTitle)
+  })
+
+  it('clamps and wraps extremely long unbroken titles', () => {
+    const longUnbroken = 'Supercalifragilisticexpialidocious'.repeat(4)
+    const longMovie = { ...mockMovie, title: longUnbroken }
+
+    render(
+      <MovieCard
+        movie={longMovie}
+        isInWatchlist={false}
+        onAddToWatchlist={mockOnAddToWatchlist}
+        onRemoveFromWatchlist={mockOnRemoveFromWatchlist}
+      />
+    )
+
+    const headings = screen.getAllByRole('heading', { name: longUnbroken })
+    const heading = headings[0]
+    expect(heading).toHaveAttribute('title', longUnbroken)
+    // Should have min height reserved and be visually truncated (cannot assert ellipsis reliably, but class + overflow hidden present)
+    expect(heading).toHaveClass('line-clamp-2')
+    expect(heading).toHaveStyle({ overflow: 'hidden' })
+  })
 })
