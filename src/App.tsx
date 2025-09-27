@@ -3,7 +3,6 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { performanceMonitor, logBundleInfo } from '@/utils/performance'
-import './App.css'
 
 function App() {
   // Performance monitoring setup
