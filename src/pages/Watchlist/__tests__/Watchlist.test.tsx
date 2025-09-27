@@ -84,7 +84,8 @@ describe('Watchlist Page', () => {
     expect(screen.getByTestId('movie-card-2')).toBeInTheDocument();
     expect(screen.getByText('Movie 1')).toBeInTheDocument();
     expect(screen.getByText('Movie 2')).toBeInTheDocument();
-    expect(screen.getByText(/2.*movies.*saved to watch later/)).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('movies saved to watch later')).toBeInTheDocument();
   });
 
   it('shows singular movie count when watchlist has one movie', () => {
@@ -102,7 +103,8 @@ describe('Watchlist Page', () => {
     
     render(<WatchlistWrapper />);
     
-    expect(screen.getByText(/1.*movie.*saved to watch later/)).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('movie saved to watch later')).toBeInTheDocument();
   });
 
   it('handles removing movies from watchlist', () => {

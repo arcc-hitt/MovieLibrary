@@ -10,39 +10,18 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
     isLoading = false
 }) {
     const [searchValue, setSearchValue] = React.useState('')
-    const [debouncedValue, setDebouncedValue] = React.useState('')
-    const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-    // Debounce the search value
-    React.useEffect(() => {
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current)
-        }
-
-        debounceTimeoutRef.current = setTimeout(() => {
-            setDebouncedValue(searchValue)
-        }, 300) // 300ms debounce delay
-
-        return () => {
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current)
-            }
-        }
-    }, [searchValue])
-
-    // Call onSearch when debounced value changes
-    React.useEffect(() => {
-        onSearch(debouncedValue)
-    }, [debouncedValue, onSearch])
 
     const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value)
-    }, [])
+        const value = e.target.value
+        setSearchValue(value)
+        // Call onSearch immediately - debouncing is handled by the parent hook
+        onSearch(value)
+    }, [onSearch])
 
     const handleClear = React.useCallback(() => {
         setSearchValue('')
-        setDebouncedValue('')
-    }, [])
+        onSearch('')
+    }, [onSearch])
 
     const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Escape') {
@@ -52,12 +31,8 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
 
     const handleSubmit = React.useCallback((e: React.FormEvent) => {
         e.preventDefault()
-        // Immediately trigger search on form submit
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current)
-        }
-        setDebouncedValue(searchValue)
-    }, [searchValue])
+        // Form submission doesn't need special handling since we're already calling onSearch on every change
+    }, [])
 
     return (
         <div className="w-full max-w-md" role="search" aria-label="Movie search">
@@ -139,7 +114,6 @@ export const SearchBar = React.memo<SearchBarProps>(function SearchBar({
             {/* Search status for screen readers */}
             <div className="sr-only" aria-live="polite" aria-atomic="true">
                 {isLoading && searchValue && `Searching for ${searchValue}...`}
-                {!isLoading && searchValue && `Search completed for ${searchValue}`}
             </div>
         </div>
     )

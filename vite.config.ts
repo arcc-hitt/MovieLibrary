@@ -58,7 +58,14 @@ export default defineConfig({
     // Enable source maps for better debugging
     sourcemap: true,
     // Optimize chunk size warnings
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    // Additional optimizations
+    minify: 'esbuild',
+    target: 'esnext',
+    cssMinify: true,
+    reportCompressedSize: false, // Faster builds
+    // Optimize assets
+    assetsInlineLimit: 4096
   },
   test: {
     globals: true,
