@@ -1,5 +1,5 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary/ErrorBoundary';
 import Layout from '../components/Layout/Layout';
 
@@ -23,7 +23,7 @@ const LazyPageWrapper = ({ children }: { children: React.ReactNode }) => (
   </ErrorBoundary>
 );
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
@@ -52,3 +52,13 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+/**
+ * Router root component kept separate to satisfy react-refresh rule:
+ * this file now exports a React component instead of just data.
+ */
+export function AppRouter() {
+  return <RouterProvider router={router} />;
+}
+
+// Intentionally not exporting router alone to satisfy react-refresh rule

@@ -19,6 +19,9 @@ interface SearchCache {
  * Custom hook for search functionality with debouncing
  * Handles search state management, result caching, and integrates with MovieStore
  */
+// Cache expiry time (5 minutes)
+const CACHE_EXPIRY_MS = 5 * 60 * 1000;
+
 export const useSearch = (options: UseSearchOptions = {}) => {
   const {
     debounceMs = 300,
@@ -44,8 +47,6 @@ export const useSearch = (options: UseSearchOptions = {}) => {
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Cache expiry time (5 minutes)
-  const CACHE_EXPIRY_MS = 5 * 60 * 1000;
 
   /**
    * Check if cached result is still valid

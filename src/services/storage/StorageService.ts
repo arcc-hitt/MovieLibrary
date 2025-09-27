@@ -137,15 +137,15 @@ export class StorageService {
    * @param item - Object to validate
    * @returns true if valid WatchlistItem, false otherwise
    */
-  private static isValidWatchlistItem(item: any): item is WatchlistItem {
+  private static isValidWatchlistItem(item: unknown): item is WatchlistItem {
+    if (typeof item !== 'object' || item === null) return false;
+    const obj = item as Record<string, unknown>;
     return (
-      typeof item === 'object' &&
-      item !== null &&
-      typeof item.id === 'number' &&
-      typeof item.title === 'string' &&
-      (item.poster_path === null || typeof item.poster_path === 'string') &&
-      typeof item.release_date === 'string' &&
-      typeof item.addedAt === 'string'
+      typeof obj.id === 'number' &&
+      typeof obj.title === 'string' &&
+      (obj.poster_path === null || typeof obj.poster_path === 'string') &&
+      typeof obj.release_date === 'string' &&
+      typeof obj.addedAt === 'string'
     );
   }
 }

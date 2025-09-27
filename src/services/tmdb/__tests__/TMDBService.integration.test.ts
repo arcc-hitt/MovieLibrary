@@ -8,7 +8,11 @@ const mockedAxios = vi.mocked(axios);
 
 describe('TMDBService Integration Tests', () => {
   let tmdbService: TMDBService;
-  let mockAxiosInstance: any;
+  interface MockAxiosInstance {
+    get: ReturnType<typeof vi.fn>;
+    interceptors: { request: { use: ReturnType<typeof vi.fn> }; response: { use: ReturnType<typeof vi.fn> } };
+  }
+  let mockAxiosInstance: MockAxiosInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -21,7 +25,7 @@ describe('TMDBService Integration Tests', () => {
       },
     };
     
-    (mockedAxios.create as any).mockReturnValue(mockAxiosInstance);
+  (mockedAxios.create as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockAxiosInstance);
     tmdbService = new TMDBService();
   });
 

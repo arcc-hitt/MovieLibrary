@@ -34,12 +34,13 @@ const mockMovies: Movie[] = [
 describe('useSearch', () => {
     const mockSearchMovies = vi.fn();
     const mockClearSearch = vi.fn();
+    const mockedUseMovieStore = vi.mocked(useMovieStore);
 
     beforeEach(() => {
         vi.clearAllMocks();
 
         // Setup default mock implementation
-        vi.mocked(useMovieStore).mockReturnValue({
+        mockedUseMovieStore.mockReturnValue({
             searchResults: [],
             isLoading: false,
             error: null,
@@ -325,7 +326,7 @@ describe('useSearch', () => {
                 clearSearch: mockClearSearch,
             };
 
-            (vi.mocked(useMovieStore) as any).mockImplementation(() => storeState);
+            mockedUseMovieStore.mockImplementation(() => storeState);
 
             const { result, rerender } = renderHook(() => useSearch({ enableCache: true }));
 
@@ -387,14 +388,14 @@ describe('useSearch', () => {
 
     describe('store integration', () => {
         it('should expose store state correctly', () => {
-            (useMovieStore as any).mockReturnValue({
+            mockedUseMovieStore.mockReturnValue({
                 searchResults: mockMovies,
                 isLoading: true,
                 error: 'Test error',
                 searchQuery: 'test query',
                 searchMovies: mockSearchMovies,
                 clearSearch: mockClearSearch,
-            } as any);
+            });
 
             const { result } = renderHook(() => useSearch());
 

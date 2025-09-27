@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Watchlist from '../Watchlist';
+import type { WatchlistItem } from '../../../types';
 
 // Mock the watchlist store
 const mockWatchlistStore = {
-  watchlist: [] as any[],
+  watchlist: [] as WatchlistItem[],
   removeFromWatchlist: vi.fn(),
   loadWatchlist: vi.fn(),
 };
@@ -16,7 +17,7 @@ vi.mock('@/stores/watchlistStore', () => ({
 
 // Mock components
 vi.mock('@/components/MovieCard/MovieCard', () => ({
-  MovieCard: ({ movie, onRemoveFromWatchlist }: any) => (
+  MovieCard: ({ movie, onRemoveFromWatchlist }: { movie: WatchlistItem; onRemoveFromWatchlist: (id: number) => void }) => (
     <div data-testid={`movie-card-${movie.id}`}>
       <h3>{movie.title}</h3>
       <button onClick={() => onRemoveFromWatchlist(movie.id)}>

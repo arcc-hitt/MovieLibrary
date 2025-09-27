@@ -105,7 +105,7 @@ export function useErrorHandler(options: ErrorHandlerOptions = {}) {
 /**
  * Hook for handling async operations with loading and error states
  */
-export function useAsyncOperation<T = any>() {
+export function useAsyncOperation<T = unknown>() {
   const [isLoading, setIsLoading] = useState(false);
   const { error, isError, errorType, handleError, clearError } = useErrorHandler();
 
@@ -159,7 +159,8 @@ export function useFormErrorHandler() {
 
   const clearFieldError = useCallback((field: string) => {
     setFieldErrors(prev => {
-      const { [field]: _, ...rest } = prev;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [field]: _removed, ...rest } = prev;
       return rest;
     });
   }, []);

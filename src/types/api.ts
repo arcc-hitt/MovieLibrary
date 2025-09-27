@@ -11,9 +11,9 @@ export interface TMDBResponse<T> {
 }
 
 /**
- * TMDB movie response type
+ * TMDB movie response type (explicit alias for clarity and future extension)
  */
-export interface TMDBMovieResponse extends TMDBResponse<Movie> {}
+export type TMDBMovieResponse = TMDBResponse<Movie>;
 
 /**
  * API error response structure

@@ -23,11 +23,9 @@ export default defineConfig({
       '@/services': path.resolve(__dirname, './src/services'),
       '@/stores': path.resolve(__dirname, './src/stores'),
       '@/types': path.resolve(__dirname, './src/types'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
     },
   },
   build: {
-    // Simpler build: rely on Vite defaults (automatic vendor splitting, sensible minification)
     sourcemap: true
   },
   test: {

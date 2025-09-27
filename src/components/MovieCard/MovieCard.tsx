@@ -6,13 +6,13 @@ import type { MovieCardProps } from '@/types/components'
 
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
 
-export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
+const MovieCardComponent: React.FC<MovieCardProps> = ({
   movie,
   isInWatchlist,
   onAddToWatchlist,
   onRemoveFromWatchlist,
   variant = 'default'
-}) {
+}) => {
   // Optimistic local state so the button toggles instantly (requested UX)
   const [optimisticInWatchlist, setOptimisticInWatchlist] = React.useState(isInWatchlist)
 
@@ -193,4 +193,6 @@ export const MovieCard = React.memo<MovieCardProps>(function MovieCard({
       </Card>
     </article>
   )
-})
+}
+
+export const MovieCard = React.memo(MovieCardComponent)

@@ -12,20 +12,8 @@ export type {
 // Component prop types
 export type { 
   MovieCardProps, 
-  SearchBarProps, 
-  NavigationProps, 
-  LayoutProps, 
-  LoadingProps 
+  SearchBarProps
 } from './components';
 
 // Store types
 export type { MovieStore, WatchlistStore } from './stores';
-
-// Utility types
-export type { 
-  AsyncFunction, 
-  EventHandler, 
-  Callback, 
-  LoadingState, 
-  ImageSize 
-} from './utils';
