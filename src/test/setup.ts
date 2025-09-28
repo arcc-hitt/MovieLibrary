@@ -1,9 +1,8 @@
 // Test environment setup
-// Add custom jest-dom matchers and any global test configuration
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Quiet axios logging during tests if desired
+// Quiet axios logging during tests
 vi.spyOn(console, 'log').mockImplementation(() => {});
 
 // Suppress noisy warnings in tests

@@ -25,16 +25,16 @@ const Watchlist = React.memo(() => {
     }
   }, [removeFromWatchlist]);
 
-  // Convert watchlist items to movie format for MovieCard - memoized for performance
+  // Convert watchlist items to movie format for MovieCard
   const watchlistMovies = useMemo(() => {
     return watchlist.map(item => ({
       id: item.id,
       title: item.title,
       poster_path: item.poster_path,
       release_date: item.release_date,
-      overview: '', // Not stored in watchlist
-      vote_average: 0, // Not stored in watchlist
-      genre_ids: [], // Not stored in watchlist
+      overview: '',
+      vote_average: 0,
+      genre_ids: [],
     }));
   }, [watchlist]);
 
@@ -44,7 +44,7 @@ const Watchlist = React.memo(() => {
   if (isEmpty) {
     return (
       <div className="space-y-6 sm:space-y-8">
-        {/* Header - Enhanced for accessibility */}
+        {/* Header */}
         <header className="space-y-2 sm:space-y-3">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">My Watchlist</h1>
           <p className="text-muted-foreground text-sm sm:text-base">
@@ -52,7 +52,7 @@ const Watchlist = React.memo(() => {
           </p>
         </header>
 
-        {/* Empty State - Enhanced accessibility */}
+        {/* Empty State */}
         <section 
           className="flex flex-col items-center justify-center py-12 sm:py-16 text-center"
           aria-label="Empty watchlist state"
@@ -88,7 +88,7 @@ const Watchlist = React.memo(() => {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header - Enhanced for accessibility */}
+      {/* Header */}
       <header className="space-y-2 sm:space-y-3">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">My Watchlist</h1>
         <p className="text-muted-foreground text-sm sm:text-base">
@@ -97,7 +97,7 @@ const Watchlist = React.memo(() => {
         </p>
       </header>
 
-      {/* Movies Grid - Enhanced with proper ARIA labels */}
+      {/* Movies Grid */}
       <section 
         aria-label={`Your watchlist containing ${watchlistCount} ${watchlistCount === 1 ? 'movie' : 'movies'}`}
         className="w-full"
@@ -108,15 +108,14 @@ const Watchlist = React.memo(() => {
               key={movie.id}
               movie={movie}
               isInWatchlist={true}
-              onAddToWatchlist={() => {}} // Not used since isInWatchlist is always true
+              onAddToWatchlist={() => {}}
               onRemoveFromWatchlist={handleRemoveFromWatchlist}
-              variant="watchlist"
             />
           ))}
         </div>
       </section>
 
-      {/* Footer - Enhanced accessibility */}
+      {/* Footer */}
       <footer className="text-center pt-6 sm:pt-8">
         <p className="text-muted-foreground mb-4 text-sm sm:text-base">
           Want to add more movies to your watchlist?

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Home, Heart } from 'lucide-react'
+import { Menu, X, Home, Heart, Clapperboard } from 'lucide-react'
 import { Button, Badge, ThemeToggle } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { useWatchlistStore } from '@/stores/watchlistStore'
@@ -56,22 +56,23 @@ export const Navigation = React.memo(function Navigation() {
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    {/* Logo/Brand - Enhanced for accessibility */}
+                    {/* Logo/Brand */}
                     <div className="flex-shrink-0">
                         <Link 
                             to="/" 
                             className={cn(
-                                "text-xl font-bold text-foreground",
-                                "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md px-2 py-1",
+                                "text-xl font-bold text-foreground gap-2 flex items-center",
+                                "rounded-md px-2 py-1",
                                 "hover:text-primary transition-colors"
                             )}
                             aria-label="Movie Library - Go to home page"
                         >
-                            <span role="img" aria-label="Movie camera">🎬</span> Movie Library
+                            <Clapperboard className="h-6 w-6 inline-block" aria-label="Clapperboard" />
+                            Movie Library
                         </Link>
                     </div>
 
-                    {/* Desktop Navigation - Enhanced accessibility */}
+                    {/* Desktop Navigation */}
                     <div className="hidden md:flex md:items-center md:space-x-4">
                         <ul className="ml-10 flex items-baseline space-x-4" role="menubar">
                             {navigationItems.map((item) => (
@@ -81,7 +82,7 @@ export const Navigation = React.memo(function Navigation() {
                                         className={cn(
                                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                                             "hover:bg-accent hover:text-accent-foreground",
-                                            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:hover:ring-0 focus:hover:ring-offset-0",
                                             "touch-manipulation min-h-[44px]",
                                             isActivePath(item.path)
                                                 ? "bg-primary text-primary-foreground"
@@ -137,7 +138,7 @@ export const Navigation = React.memo(function Navigation() {
                     </div>
                 </div>
 
-                {/* Mobile Navigation Menu - Enhanced accessibility */}
+                {/* Mobile Navigation Menu */}
                 {isMobileMenuOpen && (
                     <div 
                         className="md:hidden"

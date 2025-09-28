@@ -17,7 +17,6 @@ interface SearchCache {
 
 /**
  * Custom hook for search functionality with debouncing
- * Handles search state management, result caching, and integrates with MovieStore
  */
 // Cache expiry time (5 minutes)
 const CACHE_EXPIRY_MS = 5 * 60 * 1000;
@@ -36,6 +35,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
     searchQuery: storeSearchQuery,
     searchMovies,
     clearSearch,
+    setError,
   } = useMovieStore();
 
   // Local state for search input
@@ -113,8 +113,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
     // Check cache first
     const cachedResults = getCachedResults(trimmedQuery);
     if (cachedResults) {
-      // Use cached results - we need to manually update the store
-      // since we're bypassing the store's search method
+      // Use cached results
       console.log(`Using cached results for query: "${trimmedQuery}"`);
       return;
     }
@@ -131,8 +130,6 @@ export const useSearch = (options: UseSearchOptions = {}) => {
       await searchMovies(trimmedQuery);
       
       // Cache the results after successful search
-      // Note: We get the results from the store after the search completes
-      // This will be handled in the useEffect that watches searchResults
     } catch (error) {
       // Only log error if it's not an abort error
       if (error instanceof Error && error.name !== 'AbortError') {
@@ -161,7 +158,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    // When input empty -> reset immediately
+    // When input empty reset immediately
     if (!trimmedInput) {
       if (isDebouncing) setIsDebouncing(false);
       clearSearch();
@@ -174,14 +171,14 @@ export const useSearch = (options: UseSearchOptions = {}) => {
       return;
     }
 
-    // Immediate mode (no debouncing desired)
+    // Immediate mode
     if (debounceMs <= 0) {
       if (isDebouncing) setIsDebouncing(false);
       // Avoid duplicate calls for same query already in store
       if (trimmedInput !== storeSearchQuery) {
         performSearch(trimmedInput);
       }
-      return; // Exit effect – no timeout
+      return;
     }
 
     // Debounced mode
@@ -250,7 +247,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
   }, [clearSearch]);
 
   /**
-   * Manually trigger search (bypass debouncing)
+   * Manually trigger search
    */
   const searchNow = useCallback(() => {
     const trimmedInput = inputValue.trim();
@@ -259,6 +256,19 @@ export const useSearch = (options: UseSearchOptions = {}) => {
       performSearch(trimmedInput);
     }
   }, [inputValue, minQueryLength, performSearch]);
+
+  /**
+   * Retry the current search by clearing error and searching again
+   */
+  const retry = useCallback(() => {
+    // Clear the error first
+    setError(null);
+    // Then perform search with current input
+    const trimmedInput = inputValue.trim();
+    if (trimmedInput.length >= minQueryLength) {
+      performSearch(trimmedInput);
+    }
+  }, [inputValue, minQueryLength, performSearch, setError]);
 
   /**
    * Clear search cache
@@ -324,6 +334,7 @@ export const useSearch = (options: UseSearchOptions = {}) => {
     // Actions
     clear,
     searchNow,
+    retry,
     
     // Cache management
     clearCache,

@@ -51,7 +51,7 @@ export const ThemeToggle = React.memo(function ThemeToggle({
       className={cn(
         'transition-all duration-200 ease-in-out',
         'hover:scale-105 active:scale-95',
-        'focus:ring-2 focus:ring-ring focus:ring-offset-2',
+        'focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:not-hover:ring-0 focus:not-hover:ring-offset-0',
         showLabel ? 'gap-2' : '',
         className
       )}

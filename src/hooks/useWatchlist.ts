@@ -3,8 +3,7 @@ import { useWatchlistStore } from '../stores/watchlistStore';
 import type { Movie, WatchlistItem } from '../types';
 
 /**
- * Custom hook for watchlist operations
- * Handles add/remove operations with proper feedback and status checking
+ * Hook for watchlist operations
  */
 export const useWatchlist = () => {
   const {
@@ -21,33 +20,18 @@ export const useWatchlist = () => {
   const [isRemoving, setIsRemoving] = useState<number | null>(null);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  /**
-   * Load watchlist on mount
-   */
   useEffect(() => {
     loadWatchlist();
   }, [loadWatchlist]);
 
-  /**
-   * Get watchlist count
-   */
   const count = watchlist.length;
 
-  /**
-   * Check if watchlist is empty
-   */
   const isEmpty = count === 0;
 
-  /**
-   * Check if a specific movie is currently being added
-   */
   const isMovieBeingAdded = useCallback((movieId: number) => {
     return isAdding === movieId;
   }, [isAdding]);
 
-  /**
-   * Check if a specific movie is currently being removed
-   */
   const isMovieBeingRemoved = useCallback((movieId: number) => {
     return isRemoving === movieId;
   }, [isRemoving]);
@@ -184,29 +168,20 @@ export const useWatchlist = () => {
   }, [watchlist]);
 
   return {
-    // Data
     watchlist,
     count,
     isEmpty,
-    
-    // Status checking
     isInWatchlist,
     isMovieBeingAdded,
     isMovieBeingRemoved,
     isMovieOperationInProgress,
-    
-    // Operations
     addToWatchlist,
     removeFromWatchlist,
     toggleWatchlist,
     clearWatchlist,
     loadWatchlist,
-    
-    // Error handling
     operationError,
     clearError,
-    
-    // Utility functions
     getWatchlistItem,
     sortedWatchlist,
     sortedByTitle,

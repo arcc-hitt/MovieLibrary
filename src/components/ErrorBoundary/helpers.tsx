@@ -7,12 +7,6 @@ export interface ErrorBoundaryProps {
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
-export function useErrorHandler() {
-  return (error: Error) => {
-    throw error; // Triggers nearest ErrorBoundary
-  };
-}
-
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   errorBoundaryProps?: Omit<ErrorBoundaryProps, 'children'>

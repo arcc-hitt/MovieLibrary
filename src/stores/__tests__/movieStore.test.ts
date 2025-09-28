@@ -1,19 +1,15 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useMovieStore } from '../movieStore';
-// import { tmdbService } from '../../services';
-import type { TMDBMovieResponse, Movie } from '../../types';
-
 // Mock the TMDB service
-const mockTMDBService = {
-  getPopularMovies: vi.fn(),
-  searchMovies: vi.fn(),
-};
-
 vi.mock('../../services', () => ({
   tmdbService: {
-    getInstance: vi.fn(() => mockTMDBService),
+    getPopularMovies: vi.fn(),
+    searchMovies: vi.fn(),
   },
 }));
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { useMovieStore } from '../movieStore';
+import { tmdbService } from '../../services';
+import type { TMDBMovieResponse, Movie } from '../../types';
 
 describe('MovieStore', () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -70,7 +66,7 @@ describe('MovieStore', () => {
 
   describe('fetchPopularMovies', () => {
     it('should fetch popular movies successfully', async () => {
-      vi.mocked(mockTMDBService.getPopularMovies).mockResolvedValue(mockResponse);
+      vi.mocked(tmdbService.getPopularMovies).mockResolvedValue(mockResponse);
 
       const store = useMovieStore.getState();
       await store.fetchPopularMovies();
@@ -79,7 +75,7 @@ describe('MovieStore', () => {
       expect(state.popularMovies).toEqual(mockMovies);
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(null);
-      expect(mockTMDBService.getPopularMovies).toHaveBeenCalledOnce();
+      expect(tmdbService.getPopularMovies).toHaveBeenCalledOnce();
     });
 
     it('should set loading state during fetch', async () => {
@@ -88,7 +84,7 @@ describe('MovieStore', () => {
         resolvePromise = resolve;
       });
       
-      mockTMDBService.getPopularMovies.mockReturnValue(promise);
+      vi.mocked(tmdbService.getPopularMovies).mockReturnValue(promise);
 
       const store = useMovieStore.getState();
       const fetchPromise = store.fetchPopularMovies();
@@ -107,7 +103,7 @@ describe('MovieStore', () => {
 
     it('should handle API errors', async () => {
       const errorMessage = 'API Error';
-      vi.mocked(mockTMDBService.getPopularMovies).mockRejectedValue(new Error(errorMessage));
+      vi.mocked(tmdbService.getPopularMovies).mockRejectedValue(new Error(errorMessage));
 
       const store = useMovieStore.getState();
       await store.fetchPopularMovies();
@@ -124,7 +120,7 @@ describe('MovieStore', () => {
         status_message: 'Invalid API key',
         success: false,
       };
-      vi.mocked(mockTMDBService.getPopularMovies).mockRejectedValue(apiError);
+      vi.mocked(tmdbService.getPopularMovies).mockRejectedValue(apiError);
 
       const store = useMovieStore.getState();
       await store.fetchPopularMovies();
@@ -137,7 +133,7 @@ describe('MovieStore', () => {
   describe('searchMovies', () => {
     it('should search movies successfully', async () => {
       const query = 'test movie';
-      vi.mocked(mockTMDBService.searchMovies).mockResolvedValue(mockResponse);
+      vi.mocked(tmdbService.searchMovies).mockResolvedValue(mockResponse);
 
       const store = useMovieStore.getState();
       await store.searchMovies(query);
@@ -147,7 +143,7 @@ describe('MovieStore', () => {
       expect(state.searchQuery).toBe(query);
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(null);
-      expect(mockTMDBService.searchMovies).toHaveBeenCalledWith(query);
+      expect(tmdbService.searchMovies).toHaveBeenCalledWith(query);
     });
 
     it('should clear search when query is empty', async () => {
@@ -163,7 +159,7 @@ describe('MovieStore', () => {
       const state = useMovieStore.getState();
       expect(state.searchResults).toEqual([]);
       expect(state.searchQuery).toBe('');
-      expect(mockTMDBService.searchMovies).not.toHaveBeenCalled();
+      expect(tmdbService.searchMovies).not.toHaveBeenCalled();
     });
 
     it('should clear search when query is only whitespace', async () => {
@@ -173,25 +169,25 @@ describe('MovieStore', () => {
       const state = useMovieStore.getState();
       expect(state.searchResults).toEqual([]);
       expect(state.searchQuery).toBe('');
-      expect(mockTMDBService.searchMovies).not.toHaveBeenCalled();
+      expect(tmdbService.searchMovies).not.toHaveBeenCalled();
     });
 
     it('should trim search query', async () => {
       const query = '  test movie  ';
       const trimmedQuery = 'test movie';
-      vi.mocked(mockTMDBService.searchMovies).mockResolvedValue(mockResponse);
+      vi.mocked(tmdbService.searchMovies).mockResolvedValue(mockResponse);
 
       const store = useMovieStore.getState();
       await store.searchMovies(query);
 
       const state = useMovieStore.getState();
       expect(state.searchQuery).toBe(trimmedQuery);
-      expect(mockTMDBService.searchMovies).toHaveBeenCalledWith(trimmedQuery);
+      expect(tmdbService.searchMovies).toHaveBeenCalledWith(trimmedQuery);
     });
 
     it('should handle search errors', async () => {
       const errorMessage = 'Search failed';
-      vi.mocked(mockTMDBService.searchMovies).mockRejectedValue(new Error(errorMessage));
+      vi.mocked(tmdbService.searchMovies).mockRejectedValue(new Error(errorMessage));
 
       const store = useMovieStore.getState();
       await store.searchMovies('test');
