@@ -8,7 +8,6 @@ export interface MovieCardProps {
   isInWatchlist: boolean;
   onAddToWatchlist: (movie: Movie) => void;
   onRemoveFromWatchlist: (movieId: number) => void;
-  variant?: 'default' | 'watchlist';
 }
 
 /**

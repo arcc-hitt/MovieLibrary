@@ -53,12 +53,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-/**
- * Router root component kept separate to satisfy react-refresh rule:
- * this file now exports a React component instead of just data.
- */
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
-
-// Intentionally not exporting router alone to satisfy react-refresh rule

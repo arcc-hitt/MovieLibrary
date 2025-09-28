@@ -2,15 +2,9 @@ import { create } from 'zustand';
 import type { Movie, WatchlistItem, WatchlistStore } from '../types';
 import { StorageService } from '@/services/storage';
 
-/**
- * Watchlist store for managing user's saved movies
- * Integrates with StorageService for localStorage persistence
- */
 export const useWatchlistStore = create<WatchlistStore>((set, get) => ({
-  // State
   watchlist: [],
 
-  // Actions
   addToWatchlist: (movie: Movie) => {
     try {
       StorageService.addMovie(movie);

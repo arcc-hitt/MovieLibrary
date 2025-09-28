@@ -35,7 +35,8 @@ export default defineConfig({
     include: [
       'src/stores/__tests__/*.test.ts',
       'src/hooks/__tests__/{useMovies,useWatchlist}.test.ts',
-      'src/components/MovieCard/__tests__/MovieCard.test.tsx'
+      'src/components/MovieCard/__tests__/MovieCard.test.tsx',
+      'src/components/ErrorBoundary/__tests__/ErrorBoundary.test.tsx'
     ]
   },
 })

@@ -108,24 +108,17 @@ describe('ErrorBoundary', () => {
   });
 
   it('navigates to home when Go Home is clicked', () => {
-    // Mock window.location.href setter behavior
-    const originalHref = window.location.href;
-    Object.defineProperty(window, 'location', {
-      value: { ...window.location, href: '' },
-      writable: true,
-    });
-
+    const onGoHome = vi.fn();
+    
     render(
-      <ErrorBoundary>
+      <ErrorBoundary onGoHome={onGoHome}>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     );
 
     fireEvent.click(screen.getByText('Go Home'));
 
-  expect(window.location.href).toBe('/');
-  // Restore original href
-  window.location.href = originalHref;
+    expect(onGoHome).toHaveBeenCalled();
   });
 
   it('renders custom fallback component when provided', () => {

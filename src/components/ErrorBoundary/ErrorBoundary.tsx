@@ -12,13 +12,9 @@ interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallback?: React.ComponentType<ErrorFallbackProps>;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  onGoHome?: () => void;
 }
 
-// DefaultErrorFallback extracted to separate file to satisfy react-refresh rule
-
-/**
- * React Error Boundary component for catching and handling component errors
- */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -49,9 +45,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     // Call custom error handler if provided
     this.props.onError?.(error, errorInfo);
-
-    // In production, you might want to send this to an error reporting service
-    // Example: Sentry.captureException(error, { contexts: { react: errorInfo } });
   }
 
   resetError = () => {
@@ -64,8 +57,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   goHome = () => {
     this.resetError();
-    // Navigate to home - this will be handled by the router
-    window.location.href = '/';
+    if (this.props.onGoHome) {
+      this.props.onGoHome();
+    } else {
+      // Fallback to simple navigation
+      window.location.href = '/';
+    }
   };
 
   render() {
@@ -84,6 +81,3 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return this.props.children;
   }
 }
-
-// Helper hook and HOC moved to separate file to satisfy react-refresh rule that
-// component files should only export components.

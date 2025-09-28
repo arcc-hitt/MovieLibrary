@@ -11,7 +11,7 @@ export interface TMDBResponse<T> {
 }
 
 /**
- * TMDB movie response type (explicit alias for clarity and future extension)
+ * TMDB movie response type
  */
 export type TMDBMovieResponse = TMDBResponse<Movie>;
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, Plus, X } from 'lucide-react'
+import { Heart, Plus, X, Film, Star } from 'lucide-react'
 import { Card, CardContent, Button, Badge } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { MovieCardProps } from '@/types/components'
@@ -10,8 +10,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
   movie,
   isInWatchlist,
   onAddToWatchlist,
-  onRemoveFromWatchlist,
-  variant = 'default'
+  onRemoveFromWatchlist
 }) => {
   // Optimistic local state so the button toggles instantly (requested UX)
   const [optimisticInWatchlist, setOptimisticInWatchlist] = React.useState(isInWatchlist)
@@ -54,7 +53,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
     <article 
       className={cn(
         "group relative overflow-hidden transition-all duration-300",
-        "hover:shadow-lg hover:scale-105 focus-within:shadow-lg focus-within:scale-105",
+        "hover:shadow-lg hover:scale-105 focus-within:shadow-lg focus-within:scale-105 focus-within:not-hover:scale-100",
         "bg-card border-border rounded-lg",
         "w-full max-w-sm mx-auto sm:max-w-none",
         "touch-manipulation"
@@ -82,7 +81,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
             >
               <div className="text-center text-muted-foreground p-4">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
-                  <span className="text-xl sm:text-2xl" role="img" aria-label="Movie icon">🎬</span>
+                  <Film className="h-12 w-12 sm:w-16 sm:h-16" />
                 </div>
                 <p className="text-xs sm:text-sm">No Image Available</p>
               </div>
@@ -92,7 +91,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
           {/* Watchlist Button Overlay */}
           <div className={cn(
             "absolute top-2 right-2 transition-opacity duration-300",
-            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 sm:group-focus-within:not-group-hover:opacity-0"
           )}>
             <Button
               size="sm"
@@ -102,13 +101,14 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
               onKeyDown={handleKeyDown}
               className={cn(
                 "relative h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-full shadow-lg",
-                "focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                "focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:not-hover:ring-0 focus:not-hover:ring-offset-0",
                 "transition-colors motion-reduce:transition-none",
                 "touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px]",
                 optimisticInWatchlist
-                  ? "bg-destructive hover:bg-destructive/90 focus:bg-destructive/90"
-                  : "bg-background/90 hover:bg-background focus:bg-background"
+                  ? "bg-destructive hover:bg-destructive/95 focus:bg-destructive/95"
+                  : "bg-background/85 hover:bg-background focus:bg-background"
               )}
+              title={`${optimisticInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}`}
               aria-label={`${optimisticInWatchlist ? 'Remove' : 'Add'} ${movie.title} ${optimisticInWatchlist ? 'from' : 'to'} watchlist`}
               aria-pressed={optimisticInWatchlist}
               tabIndex={0}
@@ -147,7 +147,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
                 className="bg-background/90 text-foreground text-xs sm:text-sm"
                 aria-label={`Rating: ${movie.vote_average.toFixed(1)} out of 10`}
               >
-                <span aria-hidden="true">⭐</span>
+                <Star className="h-5 w-5 text-yellow-500" fill="currentColor" aria-hidden="true" />
                 <span className="ml-1">{movie.vote_average.toFixed(1)}</span>
               </Badge>
             </div>
@@ -179,7 +179,7 @@ const MovieCardComponent: React.FC<MovieCardProps> = ({
               </p>
             )}
 
-            {variant === 'watchlist' && isInWatchlist && (
+            {optimisticInWatchlist && (
               <div 
                 className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground"
                 aria-label="This movie is in your watchlist"

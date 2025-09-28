@@ -10,7 +10,6 @@ import { useWatchlistStore } from '@/stores/watchlistStore';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Film } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +17,7 @@ const Home = React.memo(() => {
   const {
     popularMovies,
     fetchPopularMovies,
+    error: storeError,
   } = useMovieStore();
 
   const {
@@ -42,9 +42,10 @@ const Home = React.memo(() => {
     hasResults,
     isEmpty,
     clear: clearSearch,
+    retry: retrySearch,
   } = useSearch({
-    debounceMs: 0, // Fully immediate search (no debounce)
-    minQueryLength: 1, // Search from first character
+    debounceMs: 0,
+    minQueryLength: 1,
     enableCache: true,
   });
 
@@ -80,8 +81,12 @@ const Home = React.memo(() => {
     if (showingSearchResults) {
       return searchError;
     }
-    return null; // Popular movies error is handled separately
-  }, [showingSearchResults, searchError]);
+    // For popular movies, show error if we have no movies and there's an error
+    if (!showingSearchResults && popularMovies.length === 0 && storeError) {
+      return storeError;
+    }
+    return null;
+  }, [showingSearchResults, searchError, popularMovies.length, storeError]);
 
   const handleAddToWatchlist = useCallback((movie: Movie) => {
     try {
@@ -103,6 +108,10 @@ const Home = React.memo(() => {
     clearSearch();
   }, [clearSearch]);
 
+  const handleRetryPopularMovies = useCallback(() => {
+    fetchPopularMovies();
+  }, [fetchPopularMovies]);
+
   const renderMovieGrid = useMemo(() => {
     // Handle search loading state
     if (isLoading) {
@@ -115,15 +124,16 @@ const Home = React.memo(() => {
       );
     }
 
-    // Handle search error state
+    // Handle error state (search or popular movies)
     if (error) {
+      const isPopularMoviesError = !showingSearchResults;
       return (
         <div className="py-12">
           <ErrorDisplay
             error={error}
-            onRetry={() => setQuery(inputValue)} // Retry the current search
+            onRetry={isPopularMoviesError ? handleRetryPopularMovies : retrySearch}
             variant="card"
-            title="Search Failed"
+            title={isPopularMoviesError ? "Failed to Load Movies" : "Search Failed"}
           />
         </div>
       );
@@ -148,22 +158,6 @@ const Home = React.memo(() => {
       );
     }
 
-    // Handle no popular movies (separate from search)
-    if (!showingSearchResults && popularMovies.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Film className="h-16 w-16 text-muted-foreground mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No movies available</h2>
-          <p className="text-muted-foreground mb-4">
-            Unable to load popular movies at the moment.
-          </p>
-          <Button onClick={fetchPopularMovies}>
-            Retry
-          </Button>
-        </div>
-      );
-    }
-
     // Render movie grid
     return (
       <div className="grid gap-4 sm:gap-6 [grid-template-columns:repeat(auto-fill,minmax(160px,1fr))] sm:[grid-template-columns:repeat(auto-fill,minmax(180px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] lg:[grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
@@ -174,7 +168,6 @@ const Home = React.memo(() => {
             isInWatchlist={isInWatchlist(movie.id)}
             onAddToWatchlist={handleAddToWatchlist}
             onRemoveFromWatchlist={handleRemoveFromWatchlist}
-            variant="default"
           />
         ))}
       </div>
@@ -214,7 +207,7 @@ const Home = React.memo(() => {
         </Alert>
       )}
 
-      {/* Header - Enhanced for accessibility */}
+      {/* Header */}
       <header className="space-y-2 sm:space-y-3">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
           {showingSearchResults ? 'Search Results' : 'Popular Movies'}
@@ -249,12 +242,12 @@ const Home = React.memo(() => {
         />
       </section>
 
-      {/* Movies Grid - Enhanced with proper ARIA labels */}
+      {/* Movies Grid */}
       <section 
         aria-label={showingSearchResults ? `Search results for ${searchQuery}` : 'Popular movies'}
         className="w-full"
       >
-        {/* Loading announcement for screen readers */}
+        {/* Loading for screen readers */}
         {isSearching && searchQuery && (
           <div className="sr-only" aria-live="polite" aria-atomic="true">
             Searching for {searchQuery}...
@@ -264,7 +257,7 @@ const Home = React.memo(() => {
         {renderMovieGrid}
       </section>
 
-      {/* Results count - Enhanced accessibility */}
+      {/* Results count */}
       {!isLoading && !error && moviesToDisplay.length > 0 && (
         <footer 
           className="text-center text-muted-foreground text-sm sm:text-base"
@@ -277,7 +270,7 @@ const Home = React.memo(() => {
         </footer>
       )}
 
-      {/* Status announcements for screen readers */}
+      {/* Status for screen readers */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {error && `Search error: ${error}`}
         {isEmpty && searchQuery && 
